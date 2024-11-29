@@ -8,5 +8,14 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "Game Dao Vang cách chơi: bấm nút Space để thả móc, nếu trúng kim cương điểm sẽ tăng, còn đá thì điểm sẽ giảm",
+  "dependencies": {
+    "@solana/spl-token": "^0.4.9",
+    "@solana/web3.js": "^1.95.5",
+    "express": "^4.21.1",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.10"
+  }
 }

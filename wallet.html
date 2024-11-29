@@ -124,7 +124,7 @@
       color: #fff;
     }
 
-    .exchange-button {
+    #convert-button {
       background-color: #ffc107;
       color: #000;
       border: none;
@@ -136,7 +136,7 @@
       margin-top: 10px;
     }
 
-    .exchange-button:hover {
+    #convert-button:hover {
       background-color: #ffa000;
     }
 
@@ -161,7 +161,8 @@
     .nav-item:hover {
       color: #ffc107;
     }
-    i{
+
+    i {
       font-size: 20px;
     }
   </style>
@@ -178,39 +179,78 @@
         <div class="points-section">
           <label for="points" class="points-label">Điểm</label>
           <div class="points-input-wrapper">
-            <input type="text" id="points" class="points-input" placeholder="0">
+            <input type="number" id="points" class="points-input" placeholder="0">
             <span class="currency">$</span>
           </div>
           <div class="diamond-section">
             <img src="./image/diamond.png" alt="Diamond Icon" class="diamond-icon">
             <span class="diamond-points">Diamonds points: <b>100,253,651 DP</b></span>
           </div>
-          <button class="exchange-button">Sẵn sàng để đổi token</button>
+          <button id="convert-button">Sẵn sàng để đổi token</button>
         </div>
       </main>
       <footer>
         <nav class="bottom-nav">
-          <div class="nav-item">
-            <a href="/home.html" style="text-decoration: none; color: white;">
-                <i class="fa-solid fa-house"></i>
-            </a>
-        </div>
-          <div class="nav-item">
-              <a href="/rank.html" style="text-decoration: none; color: white;">
-                  <i class="fa-solid fa-chart-column"></i>
-              </a>
-          </div>
+          <div class="nav-item"><i class="fa-solid fa-house"></i></div>
+          <div class="nav-item"><i class="fa-solid fa-chart-column"></i></div>
           <div class="nav-item"><i class="fa-solid fa-shop"></i></div>
-          <div class="nav-item">
-              <a href="/wallet.html" style="text-decoration: none; color: white;">
-                  <i class="fa-solid fa-wallet"></i>
-              </a>
-          </div>
-      </nav>
-    </footer>
+          <div class="nav-item"><i class="fa-solid fa-wallet"></i></div>
+        </nav>
+      </footer>
     </div>
   </div>
-  <script src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js"></script>
+  <script>
+    const convertButton = document.getElementById('convert-button');
+
+    // Phantom Wallet Integration
+    const connectWallet = async () => {
+      if (window.solana && window.solana.isPhantom) {
+        try {
+          const response = await window.solana.connect();
+          console.log('Connected wallet:', response.publicKey.toString());
+          return response.publicKey.toString();
+        } catch (err) {
+          console.error('Wallet connection failed:', err);
+        }
+      } else {
+        alert('Please install Phantom Wallet!');
+      }
+    };
+
+    // Handle button click
+    convertButton.addEventListener('click', async () => {
+      const points = document.getElementById('points').value;
+      if (!points || points <= 0) {
+        alert('Vui lòng nhập số điểm hợp lệ.');
+        return;
+      }
+
+      // Kết nối ví Phantom
+      const walletAddress = await connectWallet();
+      if (!walletAddress) return;
+
+      // Gửi yêu cầu đến backend để xử lý
+      fetch('/api/convert-to-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          points: parseInt(points, 10),
+          walletAddress: walletAddress, // Địa chỉ ví Phantom của người chơi
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            alert(`Đổi token thành công! Giao dịch: ${data.transactionId}`);
+          } else {
+            alert(`Đổi token thất bại: ${data.message}`);
+          }
+        })
+        .catch((err) => console.error('Lỗi:', err));
+    });
+  </script>
+  <script src="./tranfer_sol.js"></script>
 </body>
 
 </html>
