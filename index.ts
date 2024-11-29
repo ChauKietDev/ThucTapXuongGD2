@@ -136,7 +136,7 @@ function updateHook(): void {
 
                     // Hiển thị điểm số mới
                     scoreDisplay.textContent = score.toString();
-                }); // Thời gian chờ 2 giây
+                }); // Bỏ thời gian chờ 2 giây
             }
         }
 
