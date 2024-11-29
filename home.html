@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goldian Bonus Giveaway</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    <style>
+        /* General styles */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #0c1b2e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #fff;
+        }
+
+        .phone-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .phone {
+            background-image: url(./image/bg.png);
+            background-size: 1000px;
+            border-radius: 20px;
+            width: 360px;
+            /* Chiều rộng giống kích thước điện thoại */
+            height: 640px;
+            /* Chiều cao giống điện thoại */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+
+        /* Header styles */
+        header {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            color: #ffc107;
+        }
+
+        .bonus {
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        /* Main content styles */
+        .game-section {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .dino {
+            width: 120px;
+            margin: 20px 0;
+        }
+
+        .play-button {
+            background-color: #ffc107;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .play-button:hover {
+            background-color: #ffa000;
+        }
+
+        /* Footer styles */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background-color: #1a2a3f;
+            padding: 10px 0;
+        }
+
+        .nav-item {
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            color: #ffc107;
+        }
+        i{
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="phone-container">
+        <div class="phone">
+            <header>
+                <img src="./image/sol.png" style="width: 100px; height: 100px;" alt="">
+                <h1 class="logo">GOLDIAN</h1>
+                <div class="bonus">BONUS GIVEAWAY</div>
+            </header>
+            <main>
+                <div class="game-section">
+                    <img src="./image/khunglong.png" alt="Dinosaur" class="dino">
+                    <button class="play-button">Play Game (Your Attempt: 6/6)</button>
+                </div>
+            </main>
+            <footer>
+                <nav class="bottom-nav">
+                    <div class="nav-item"><i class="fa-solid fa-house"></i></div>
+                    <div class="nav-item"><i class="fa-solid fa-chart-column"></i></div>
+                    <div class="nav-item"><i class="fa-solid fa-shop"></i></div>
+                    <div class="nav-item"><i class="fa-solid fa-wallet"></i></div>
+                </nav>
+            </footer>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    <title>Player Rank Score</title>
+    <style>
+        /* General styles */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #0c1b2e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #fff;
+        }
+
+        .phone-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .phone {
+            background-image: url(./image/bg.png);
+            background-size: 1000px;
+            background-color: #112240;
+            border-radius: 20px;
+            width: 360px;
+            /* Phone width */
+            height: 640px;
+            /* Phone height */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+
+        /* Header styles */
+        header {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .title {
+            font-size: 20px;
+            color: #ffc107;
+        }
+
+        .player-count {
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* Rank list styles */
+        .rank-list {
+            flex: 1;
+            overflow-y: auto;
+            margin: 10px 15px;
+            border: 1px solid #444;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .rank-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #333;
+        }
+
+        .rank-item:last-child {
+            border-bottom: none;
+        }
+
+        .rank {
+            font-size: 14px;
+            color: #fff;
+        }
+
+        .score {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+
+        .diamond-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Highlighted rank */
+        .highlight {
+            background-color: #1a3a5f;
+            border-radius: 5px;
+        }
+
+        /* Footer styles */
+        .play-button {
+            background-color: #ffc107;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 20px;
+            margin: 10px auto;
+            width: 90%;
+            cursor: pointer;
+        }
+
+        .play-button:hover {
+            background-color: #ffa000;
+        }
+
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background-color: #1a2a3f;
+            padding: 10px 0;
+        }
+
+        .nav-item {
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            color: #ffc107;
+        }
+        .game-section {
+            text-align: center;
+            margin-top: 20px;
+        }
+        i{
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="phone-container">
+        <div class="phone">
+            <header>
+                <h1 class="title">Player Rank Score</h1>
+                <p class="player-count">2,024 Players</p>
+            </header>
+            <main>
+                <div class="rank-list">
+                    <!-- Example of ranked player -->
+                    <div class="rank-item highlight">
+                        <div class="rank">7+ Me</div>
+                        <div class="score">
+                            <img src="./image/diamond.png" alt="Diamond" class="diamond-icon">
+                            100,235,651
+                        </div>
+                    </div>
+                    <!-- Other players -->
+                    <div class="rank-item">
+                        <div class="rank">1. Alxte Hein</div>
+                        <div class="score">
+                            <img src="./image/diamond.png" alt="Diamond" class="diamond-icon">
+                            100,235,651
+                        </div>
+                    </div>
+                    <div class="rank-item">
+                        <div class="rank">2. Kkashihi</div>
+                        <div class="score">
+                            <img src="./image/diamond.png" alt="Diamond" class="diamond-icon">
+                            100,235,651
+                        </div>
+                    </div>
+                    <div class="rank-item">
+                        <div class="rank">3. Kiệt Lạch.</div>
+                        <div class="score">
+                            <img src="./image/diamond.png" alt="Diamond" class="diamond-icon">
+                            100,235,651
+                        </div>
+                    </div>
+                    <div class="rank-item">
+                        <div class="rank">4. Nghĩa Lỗ</div>
+                        <div class="score">
+                            <img src="./image/diamond.png" alt="Diamond" class="diamond-icon">
+                            100,235,651
+                        </div>
+                    </div>
+                    <div class="rank-item">
+                        <div class="rank">5. Hcshi Bacha La</div>
+                        <div class="score">
+                            <img src="./image/diamond.png" alt="Diamond" class="diamond-icon">
+                            100,235,651
+                        </div>
+                    </div>
+                    <div class="rank-item">
+                        <div class="rank">6. Bakha Di</div>
+                        <div class="score">
+                            <img src="./image/diamond.png" alt="Diamond" class="diamond-icon">
+                            100,235,651
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <div class="game-section">
+                <button class="play-button">Play Game (Your Attempt: 6/6)</button>
+            </div>
+            <footer>
+                <nav class="bottom-nav">
+                    <div class="nav-item"><i class="fa-solid fa-house"></i></div>
+                    <div class="nav-item"><i class="fa-solid fa-chart-column"></i></div>
+                    <div class="nav-item"><i class="fa-solid fa-shop"></i></div>
+                    <div class="nav-item"><i class="fa-solid fa-wallet"></i></div>
+                </nav>
+            </footer>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
