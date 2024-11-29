@@ -1,4 +1,7 @@
 import { LAMPORTS_PER_SOL, SystemProgram, Transaction, sendAndConfirmTransaction, Keypair, PublicKey, Connection, clusterApiUrl } from "@solana/web3.js";
+// Lấy phần tử từ DOM giả lập
+// const coin = document.getElementById("points") as HTMLButtonElement
+// console.log(coin);  // In ra giá trị của input
 // Kết nối với mạng Solana
 const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
 // Địa chỉ ví gửi cố định dưới dạng chuỗi
@@ -20,6 +23,7 @@ async function transferSol() {
         console.log("Số dư ví gửi trước khi chuyển:", preBalance1 / LAMPORTS_PER_SOL);
         console.log("Số dư ví nhận trước khi chuyển:", preBalance2 / LAMPORTS_PER_SOL);
         console.log("\n");
+        // const points = Number(coin.value);
         // Số lượng SOL muốn chuyển
         const transferAmount = 0.01; // 0.01 SOL
         // Tạo lệnh chuyển tiền từ ví gửi đến ví nhận

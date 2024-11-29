@@ -179,7 +179,7 @@
         <div class="points-section">
           <label for="points" class="points-label">Điểm</label>
           <div class="points-input-wrapper">
-            <input type="number" id="points" class="points-input" placeholder="0">
+            <input type="number" id="amount" class="points-input" placeholder="0">
             <span class="currency">$</span>
           </div>
           <div class="diamond-section">
@@ -200,8 +200,11 @@
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
   <script>
     const convertButton = document.getElementById('convert-button');
+    const connectButton = document.querySelector('.connect-wallet');  // Lấy nút kết nối ví
 
     // Phantom Wallet Integration
     const connectWallet = async () => {
@@ -209,48 +212,91 @@
         try {
           const response = await window.solana.connect();
           console.log('Connected wallet:', response.publicKey.toString());
-          return response.publicKey.toString();
+          return response.publicKey.toString();  // Trả về public key của ví
         } catch (err) {
           console.error('Wallet connection failed:', err);
+          alert('Kết nối ví thất bại!');
         }
       } else {
-        alert('Please install Phantom Wallet!');
+        alert('Vui lòng cài đặt Phantom Wallet!');
       }
     };
 
-    // Handle button click
+    // Cập nhật nội dung nút khi kết nối ví
+    const updateConnectButton = (publicKey) => {
+      if (publicKey) {
+        connectButton.textContent = `${publicKey.slice(0, 6)}...${publicKey.slice(-4)}`;  // Hiển thị 6 ký tự đầu và 4 ký tự cuối của địa chỉ ví
+        window.publicKey = publicKey;  // Giả sử publicKey đã được kết nối
+      } else {
+        connectButton.textContent = 'Kết nối ví';  // Nếu chưa kết nối, hiển thị "Kết nối ví"
+      }
+    };
+
+    // Xử lý sự kiện khi nhấn nút kết nối ví
+    connectButton.addEventListener('click', async () => {
+      const publicKey = await connectWallet();
+      updateConnectButton(publicKey);  // Cập nhật nội dung nút sau khi kết nối ví
+    });
+
+    //xử lí sự kiện chuyển đổi token
+    convertButton.addEventListener('click', async function () {
+      const response = await window.solana.connect();
+      const receiver = response.publicKey.toString()
+      console.log("địa chỉ ví người nhận: "+ receiver)
+      const amount = document.getElementById('amount').value;
+      let amount_token = amount * 0.0001
+      console.log("Số lượng xu: " + amount)
+      console.log("Số lượng token: " + amount_token)
+      
+      // Kiểm tra xem các trường đã được nhập đầy đủ chưa
+      if (!receiver || !amount) {
+        alert('Vui lòng nhập địa chỉ ví người nhận và số lượng SOL.');
+        return;
+      }
+
+      // Kiểm tra định dạng địa chỉ ví có hợp lệ không (ví dụ chỉ kiểm tra độ dài)
+      if (receiver.length !== 44) {
+        alert('Địa chỉ ví không hợp lệ.');
+        return;
+      }
+
+      try {
+        // Gửi yêu cầu chuyển tiền tới API backend
+        const response = await axios.post('http://localhost:3000/transfer', {
+          receiver: receiver,
+          amount: amount_token
+        });
+
+        if (response.data.success) {
+          alert('Chuyển tiền thành công!');
+          console.log('Chữ ký giao dịch: ', response.data.transactionSignature);
+          // Chuyển hướng đến trang Solana Explorer
+          window.open(response.data.transactionSignature, '_blank');
+        } else {
+          alert('Đã xảy ra lỗi trong quá trình giao dịch.');
+        }
+      } catch (error) {
+        console.error('Lỗi trong quá trình giao dịch: ', error);
+        alert('Lỗi trong quá trình giao dịch, vui lòng thử lại.');
+      }
+    });
+
+    // Xử lý nhấn nút chuyển đổi
     convertButton.addEventListener('click', async () => {
-      const points = document.getElementById('points').value;
+      const pointsInput = document.getElementById('points');
+      const points = parseFloat(pointsInput.value);
+
       if (!points || points <= 0) {
         alert('Vui lòng nhập số điểm hợp lệ.');
         return;
       }
 
-      // Kết nối ví Phantom
-      const walletAddress = await connectWallet();
-      if (!walletAddress) return;
-
-      // Gửi yêu cầu đến backend để xử lý
-      fetch('/api/convert-to-token', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          points: parseInt(points, 10),
-          walletAddress: walletAddress, // Địa chỉ ví Phantom của người chơi
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.success) {
-            alert(`Đổi token thành công! Giao dịch: ${data.transactionId}`);
-          } else {
-            alert(`Đổi token thất bại: ${data.message}`);
-          }
-        })
-        .catch((err) => console.error('Lỗi:', err));
+      if (!publicKey) {
+        alert('Vui lòng kết nối ví trước.');
+        return;
+      }
     });
   </script>
-  <script src="./tranfer_sol.js"></script>
 </body>
 
 </html>
