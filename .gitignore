@@ -1,6 +1,7 @@
 # Node.js modules
 node_modules/
 
+
 # Logs
 logs
 *.log
@@ -28,3 +29,7 @@ build/
 *.pem
 *.key
 *.crt
+test-ledger/
+test-ledger/validator-1732860977865.log
+test-ledger/rocksdb/*.log
+test-ledger/rocksdb/*.sst
