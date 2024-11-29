@@ -48,6 +48,19 @@
             text-align: center;
         }
 
+        .user{
+            background: linear-gradient(#539cd2, #50cdde);
+            border-top-left-radius: 20px;
+            border-bottom-left-radius: 20px;
+            padding: 5px 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            color: #fdde57; /* Gold color for text */
+            font-size: 19px;
+            font-weight: bold;
+            width: fit-content;
+            margin-left: auto;
+        }
+        
         .logo {
             font-size: 24px;
             color: #ffc107;
@@ -112,6 +125,10 @@
     <div class="phone-container">
         <div class="phone">
             <header>
+                <div class="user">
+                    <i class="fa-solid fa-user" style="color: white;"></i>
+                    Nghĩa Lỗ
+                </div>
                 <img src="./image/sol.png" style="width: 100px; height: 100px;" alt="">
                 <h1 class="logo">GOLDIAN</h1>
                 <div class="bonus">BONUS GIVEAWAY</div>
@@ -136,7 +153,11 @@
                             <i class="fa-solid fa-chart-column"></i>
                         </a>
                     </div>
-                    <div class="nav-item"><i class="fa-solid fa-shop"></i></div>
+                    <div class="nav-item">
+                        <a href="/shop.html" style="text-decoration: none; color: white;">
+                            <i class="fa-solid fa-shop"></i>
+                        </a>
+                    </div>
                     <div class="nav-item">
                         <a href="/wallet.html" style="text-decoration: none; color: white;">
                             <i class="fa-solid fa-wallet"></i>
@@ -146,7 +167,6 @@
             </footer>
         </div>
     </div>
-    <script src="script.js"></script>
 </body>
 
 </html>

@@ -80,18 +80,17 @@ function formatTime(seconds: number): string {
 // Hàm bắt đầu đếm ngược
 function startCountdown() {
     // Hiển thị giá trị ban đầu ngay lập tức
-    countdownElement.textContent = "Remaining: " + countdownTime + "s";
+    countdownElement.textContent = "Time: " + countdownTime + "s";
 
     const interval = setInterval(() => {
         if (countdownTime <= 0) {
             clearInterval(interval);
-            countdownElement.textContent = "Time's up!";
             setTimeout(() => {
                 window.location.href = "home.html";
             }, 1000)
         } else {
             countdownTime--;
-            countdownElement.textContent = "Remaining: " + formatTime(countdownTime) + "s";
+            countdownElement.textContent = "Time: " + formatTime(countdownTime) + "s";
         }
     }, 1000); // Cập nhật mỗi giây
 }
@@ -129,7 +128,7 @@ function generateItems(count: number): Item[] {
 
 
 // Tạo danh sách 20 vật phẩm
-const items: Item[] = generateItems(15);
+const items: Item[] = generateItems(20);
 
 // // Móc câu
 // let hook: Hook = {

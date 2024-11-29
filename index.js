@@ -44,18 +44,17 @@ function formatTime(seconds) {
 // Hàm bắt đầu đếm ngược
 function startCountdown() {
     // Hiển thị giá trị ban đầu ngay lập tức
-    countdownElement.textContent = "Remaining: " + countdownTime + "s";
+    countdownElement.textContent = "Time: " + countdownTime + "s";
     const interval = setInterval(() => {
         if (countdownTime <= 0) {
             clearInterval(interval);
-            countdownElement.textContent = "Time's up!";
             setTimeout(() => {
                 window.location.href = "home.html";
             }, 1000);
         }
         else {
             countdownTime--;
-            countdownElement.textContent = "Remaining: " + formatTime(countdownTime) + "s";
+            countdownElement.textContent = "Time: " + formatTime(countdownTime) + "s";
         }
     }, 1000); // Cập nhật mỗi giây
 }
@@ -88,7 +87,7 @@ function generateItems(count) {
     return generatedItems;
 }
 // Tạo danh sách 20 vật phẩm
-const items = generateItems(15);
+const items = generateItems(20);
 // // Móc câu
 // let hook: Hook = {
 //     x: canvas.width / 2, // Vị trí gốc của móc câu
