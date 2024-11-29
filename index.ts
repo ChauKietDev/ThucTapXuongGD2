@@ -48,6 +48,49 @@ itemImage.onload = () => {
 
 const paddingTop = 400; // Khoảng cách từ cạnh trên của canvas
 
+// Lấy các phần tử HTML
+const countdownElement = document.getElementById("countdown") as HTMLElement;
+
+// Thiết lập thời gian đếm ngược (ví dụ: 10 phút = 600 giây)
+let countdownTime = 60; // Đơn vị: giây
+
+// Hàm thay đổi thời gian mỗi giây
+function padStart(input: string | number, length: number, padChar: string): string {
+    let str = input.toString();
+    while (str.length < length) {
+        str = padChar + str;
+    }
+    return str;
+}
+
+// Hàm định dạng thời gian (hh:mm:ss)
+function formatTime(seconds: number): string {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    return `${secs >= 10 ? padStart(secs, 2, "0") : secs}`;
+}
+
+// Hàm bắt đầu đếm ngược
+function startCountdown() {
+    // Hiển thị giá trị ban đầu ngay lập tức
+    countdownElement.textContent = "Remaining: " + countdownTime + "s";
+
+    const interval = setInterval(() => {
+        if (countdownTime <= 0) {
+            clearInterval(interval);
+            countdownElement.textContent = "Time's up!";
+            setTimeout(() => {
+                window.location.href = "home.html";
+            }, 1000)
+        } else {
+            countdownTime--;
+            countdownElement.textContent = "Remaining: " + formatTime(countdownTime) + "s";
+        }
+    }, 1000); // Cập nhật mỗi giây
+}
+
 function generateItems(count: number): Item[] {
     const generatedItems: Item[] = [];
     for (let i = 0; i < count; i++) {
@@ -114,18 +157,23 @@ function updateHook(): void {
         // Hạ móc câu theo góc hiện tại
         hook.targetX += 5 * Math.cos(hook.angle);
         hook.targetY += 5 * Math.sin(hook.angle);
-
         // Kiểm tra va chạm với vật phẩm
         for (let item of items) {
             if (!item.isCaught && isColliding(hook.targetX, hook.targetY, item.x, item.y, item.size)) {
                 item.isCaught = true; // Đánh dấu vật phẩm đã bị bắt
                 hook.isFiring = false; // Ngừng trạng thái thả móc câu
 
+                while (hook.targetX != hook.x || hook.targetY > hook.y) {
+                    hook.targetX -= Math.abs(5 * Math.cos(hook.angle));
+                    hook.targetY -= Math.abs(5 * Math.sin(hook.angle));
+                    console.log("Target x " + hook.targetX)
+                    console.log("Target y " + hook.targetY)
+                }
+                
                 setTimeout(() => {
                     // Kéo móc câu về gốc
-                    hook.targetX = hook.x;
-                    hook.targetY = hook.y;
-                    hook.isFiring = false; // Đặt lại trạng thái sau khi móc câu về vị trí ban đầu
+                    
+                    // hook.isFiring = false; // Đặt lại trạng thái sau khi móc câu về vị trí ban đầu
 
                     // Cập nhật điểm dựa trên loại vật phẩm
                     if (item.type === "positive") {
@@ -139,7 +187,6 @@ function updateHook(): void {
                 }); // Bỏ thời gian chờ 2 giây
             }
         }
-
         // Nếu móc câu vượt khỏi màn hình
         if (hook.targetX < 0 || hook.targetX > canvas.width || hook.targetY > canvas.height) {
             hook.isFiring = false; // Dừng thả móc
@@ -222,7 +269,9 @@ function isColliding(x1: number, y1: number, x2: number, y2: number, radius: num
 function gameLoop(): void {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    updateHook();
+    if (countdownTime > 0) {
+        updateHook();
+    }
     drawHook();
     drawItems();
 
@@ -238,3 +287,5 @@ document.addEventListener("keydown", (e: KeyboardEvent) => {
 
 // Bắt đầu game
 gameLoop();
+// Khởi chạy đếm ngược
+startCountdown();

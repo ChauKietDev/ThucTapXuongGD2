@@ -45,9 +45,34 @@
         .score {
             position: absolute;
             top: 20px;
-            left: 50%;
+            left: 42%; /* Căn giữa theo trục X */
             transform: translateX(-50%);
-            font-size: 24px;
+            font-size: 20px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center; /* Đảm bảo văn bản nằm giữa trục ngang */
+            align-items: center; /* Căn giữa trục dọc */
+            min-width: 100px; /* Đặt chiều rộng tối thiểu */
+            height: 40px; /* Đặt chiều cao cố định */
+            background-color: rgba(0, 0, 0, 0.1); /* Nếu muốn có nền */
+            border-radius: 8px; /* Tùy chọn: Bo góc nếu muốn */
+        }
+        .point {
+            position: absolute;
+            display: inline;
+            margin-left: 5px;
+            top: 30px;
+            left: 44%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            font-weight: bold;
+        }
+        #countdown {
+            position: absolute;
+            top: 50px;
+            right: 35%;
+            transform: translateX(-50%);
+            font-size: 18px;
             font-weight: bold;
         }
     </style>
@@ -57,7 +82,9 @@
     <div class="phone-container">
         <div class="phone">
             <canvas id="gameCanvas"></canvas>
-            <div class="score">Score: <span id="score">0</span></div>
+            <div class="score">Score: <span id="score">0</span>
+            </div>
+            <div id="countdown"></div>
             <!-- <canvas id="gameCanvas"></canvas> -->
             <script src="index.js"></script> 
         </div>
