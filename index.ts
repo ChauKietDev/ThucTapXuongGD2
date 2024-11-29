@@ -20,21 +20,26 @@ interface Item {
 
 // Định nghĩa kiểu dữ liệu cho móc câu
 interface Hook {
-    x: number;
-    y: number;
-    angle: number;
-    length: number;
-    speed: number;
-    direction: number;
-    isFiring: boolean;
-    targetX: number;
-    targetY: number;
+    x: number; // Tọa độ X gốc của móc câu
+    y: number; // Tọa độ Y gốc của móc câu
+    angle: number; // Góc quay của móc câu
+    length: number; // Chiều dài dây
+    speed: number; // Tốc độ quay
+    direction: number; // Hướng quay
+    isFiring: boolean; // Trạng thái thả móc câu
+    targetX: number; // Tọa độ X đầu móc
+    targetY: number; // Tọa độ Y đầu móc
+    attachedItem: Item | null; // Vật phẩm đang được kéo (nếu có)
 }
+
 
 // Tải hình ảnh nhân vật
 const characterImage = new Image();
-characterImage.src = "./image/khunglong.png"; // Đường dẫn đến hình ảnh nhân vật
+characterImage.src = "./image/khunglong.png"; // Đường dẫn ảnh nhân vật
 
+characterImage.onload = () => {
+    console.log("Hình ảnh nhân vật đã tải xong!");
+};
 // Tạo ngẫu nhiên nhiều vật phẩm
 // Tải ảnh vật phẩm
 const itemImage = new Image();
@@ -54,7 +59,7 @@ function generateItems(count: number): Item[] {
         const x = Math.random() * (canvas.width - 50) + 25; // Random vị trí X
         const y = Math.random() * (canvas.height - paddingTop - 150) + paddingTop + 150; // Random Y bắt đầu từ paddingTop
         const size = Math.random() * 70 + 25;
-        const value = Math.floor(size * 30);
+        const value = Math.floor(size * 1);
 
         // Ngẫu nhiên loại vật phẩm
         const type = Math.random() < 0.8 ? "positive" : "negative";
@@ -83,71 +88,101 @@ function generateItems(count: number): Item[] {
 // Tạo danh sách 20 vật phẩm
 const items: Item[] = generateItems(15);
 
-// Móc câu
+// // Móc câu
+// let hook: Hook = {
+//     x: canvas.width / 2, // Vị trí gốc của móc câu
+//     y: 200, // Vị trí đầu dây
+//     angle: 0, // Góc quay của móc
+//     length: 100, // Độ dài dây ban đầu
+//     speed: 0.01, // Tốc độ quay của móc câu
+//     direction: 1, // Hướng quay (1 là phải, -1 là trái)
+//     isFiring: false, // Trạng thái thả móc câu
+//     targetX: canvas.width / 2, // Vị trí hiện tại của đầu móc (x)
+//     targetY: 50, // Vị trí hiện tại của đầu móc (y)
+// };
 let hook: Hook = {
-    x: canvas.width / 2, // Vị trí gốc của móc câu
-    y: 50, // Vị trí đầu dây
-    angle: 0, // Góc quay của móc
-    length: 100, // Độ dài dây ban đầu
-    speed: 0.01, // Tốc độ quay của móc câu
-    direction: 1, // Hướng quay (1 là phải, -1 là trái)
-    isFiring: false, // Trạng thái thả móc câu
-    targetX: canvas.width / 2, // Vị trí hiện tại của đầu móc (x)
-    targetY: 50, // Vị trí hiện tại của đầu móc (y)
+    x: canvas.width / 2,
+    y: 200, // Hạ thấp móc câu để thấy nhân vật
+    angle: 0,
+    length: 100,
+    speed: 0.02,
+    direction: 1,
+    isFiring: false,
+    targetX: canvas.width / 2,
+    targetY: 200,
+    attachedItem: null, // Không có vật phẩm được kéo ban đầu
 };
-
-
 function updateHook(): void {
     if (!hook.isFiring) {
-        // Lắc móc câu trong khoảng từ -π đến π/4
-        hook.angle += hook.speed * hook.direction;
-
-        // Đổi hướng khi đạt giới hạn
+        // Móc câu lắc qua lại nhanh hơn
+        hook.angle += hook.speed * hook.direction; // Tốc độ lắc qua lắc lại của móc câu
         if (hook.angle > Math.PI || hook.angle < -Math.PI / 8) {
-            hook.direction *= -1;
+            hook.direction *= -1; // Đổi hướng quay
         }
-
-        // Cập nhật vị trí đầu móc dựa trên góc quay
-        hook.targetX = hook.x + hook.length * Math.cos(hook.angle);
-        hook.targetY = hook.y + hook.length * Math.sin(hook.angle);
+        hook.targetX = hook.x + hook.length * Math.cos(hook.angle); // Tính toán vị trí đầu móc câu theo góc quay
+        hook.targetY = hook.y + hook.length * Math.sin(hook.angle); // Tính toán vị trí đầu móc câu theo góc quay
     } else {
-        // Hạ móc câu theo góc hiện tại
-        hook.targetX += 5 * Math.cos(hook.angle);
-        hook.targetY += 5 * Math.sin(hook.angle);
+        // Nếu đang thả móc câu và kéo vật phẩm về
+        if (hook.attachedItem) {
+            const item = hook.attachedItem;
+            const dx = hook.x - item.x; // Khoảng cách từ vật phẩm đến gốc
+            const dy = hook.y - item.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
 
-        // Kiểm tra va chạm với vật phẩm
-        for (let item of items) {
-            if (!item.isCaught && isColliding(hook.targetX, hook.targetY, item.x, item.y, item.size)) {
-                item.isCaught = true; // Đánh dấu vật phẩm đã bị bắt
-                hook.isFiring = false; // Ngừng trạng thái thả móc câu
+            // Xác định tốc độ kéo tùy vào loại vật phẩm
+            let pullSpeed = 0.01; // Mặc định tốc độ kéo bình thường
+            if (item.type === "negative") {
+                pullSpeed = 0.01; // Tốc độ kéo chậm lại cho vật phẩm tiêu cực
+            } else if (item.type === "positive") {
+                pullSpeed = 0.028; // Tốc độ kéo cho vật phẩm tích cực
+            }
 
-                setTimeout(() => {
-                    // Kéo móc câu về gốc
-                    hook.targetX = hook.x;
-                    hook.targetY = hook.y;
-                    hook.isFiring = false; // Đặt lại trạng thái sau khi móc câu về vị trí ban đầu
+            // Di chuyển vật phẩm và móc câu cùng thu về
+            if (distance > 5) {
+                hook.targetX += dx * pullSpeed; // Di chuyển móc câu về gốc theo trục X
+                hook.targetY += dy * pullSpeed; // Di chuyển móc câu về gốc theo trục Y
+                item.x = hook.targetX; // Cập nhật vị trí vật phẩm theo móc câu
+                item.y = hook.targetY+20;
+            } else {
+                // Khi vật phẩm chạm vào gốc của móc câu (vị trí nhân vật)
+                hook.attachedItem = null; // Giải phóng móc câu
+                hook.isFiring = false; // Ngừng trạng thái thả móc
 
-                    // Cập nhật điểm dựa trên loại vật phẩm
-                    if (item.type === "positive") {
-                        score += item.value; // Cộng điểm nếu vật phẩm là tích cực
-                    } else if (item.type === "negative") {
-                        score -= item.value; // Trừ điểm nếu vật phẩm là tiêu cực
-                    }
+                // Cập nhật điểm khi vật phẩm chạm vào nhân vật
+                if (item.type === "positive") {
+                    score += item.value; // Cộng điểm
+                } else {
+                    score -= item.value; // Trừ điểm
+                }
+                scoreDisplay.textContent = score.toString(); // Cập nhật hiển thị điểm
+            }
+        } else {
+            // Nếu không có vật phẩm được móc, tiếp tục thả móc
+            hook.targetX += 10 * Math.cos(hook.angle);
+            hook.targetY += 10 * Math.sin(hook.angle);
 
-                    // Hiển thị điểm số mới
-                    scoreDisplay.textContent = score.toString();
-                }); // Bỏ thời gian chờ 2 giây
+            // Kiểm tra va chạm với vật phẩm
+            for (let item of items) {
+                if (!item.isCaught && isColliding(hook.targetX, hook.targetY, item.x, item.y, item.size)) {
+                    item.isCaught = true; // Đánh dấu vật phẩm đã bị bắt
+                    hook.attachedItem = item; // Gắn vật phẩm vào móc
+                    break; // Chỉ móc một vật phẩm tại một thời điểm
+                }
             }
         }
 
-        // Nếu móc câu vượt khỏi màn hình
+        // Nếu móc câu vượt ra ngoài màn hình
         if (hook.targetX < 0 || hook.targetX > canvas.width || hook.targetY > canvas.height) {
-            hook.isFiring = false; // Dừng thả móc
-            hook.targetX = hook.x; // Reset vị trí X
-            hook.targetY = hook.y; // Reset vị trí Y
+            hook.isFiring = false; // Reset trạng thái thả móc
+            hook.targetX = hook.x;
+            hook.targetY = hook.y;
         }
     }
 }
+
+
+
+
 
 
 // Vẽ biểu tượng từ hình ảnh
@@ -158,8 +193,8 @@ icon.src = "./image/hook.png"; // Đường dẫn đến hình ảnh biểu tư�
 function drawHook(): void {
 
     // Kích thước nhân vật
-    const characterWidth = 50; // Chiều rộng hình ảnh nhân vật (tỷ lệ cân đối với chiều cao)
-    const characterHeight = 50; // Chiều cao hình ảnh nhân vật
+    const characterWidth = 150; // Chiều rộng hình ảnh nhân vật (tỷ lệ cân đối với chiều cao)
+    const characterHeight = 150; // Chiều cao hình ảnh nhân vật
 
     // Vẽ nhân vật ở gốc của móc câu
     ctx.drawImage(
@@ -191,24 +226,31 @@ function drawHook(): void {
 }
 
 
-// Vẽ vật phẩm
-// Vẽ vật phẩm (dùng ảnh thay cho màu vàng)
-// function drawItems() {
-//   for (let item of items) {
-//       if (!item.isCaught) {
-//           ctx.drawImage(item.image, item.x - item.size / 2, item.y - item.size / 2, item.size, item.size);
-//       }
-//   }
-// }
-
-
 function drawItems() {
     for (let item of items) {
-        if (!item.isCaught) {
-            ctx.drawImage(item.image, item.x - item.size / 2, item.y - item.size / 2, item.size, item.size);
+        // Nếu vật phẩm đang được kéo, vẽ vật phẩm ở vị trí mới
+        if (hook.attachedItem === item) {
+            ctx.drawImage(
+                item.image,
+                item.x - item.size / 2,
+                item.y - item.size / 2,
+                item.size,
+                item.size
+            );
+        } else if (!item.isCaught) {
+            // Nếu vật phẩm chưa bị bắt, vẽ nó ở vị trí ban đầu
+            ctx.drawImage(
+                item.image,
+                item.x - item.size / 2,
+                item.y - item.size / 2,
+                item.size,
+                item.size
+            );
         }
     }
 }
+
+
 
 
 // Kiểm tra va chạm hình tròn
