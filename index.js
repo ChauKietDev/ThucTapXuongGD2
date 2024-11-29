@@ -96,7 +96,7 @@ function updateHook() {
                     }
                     // Hiển thị điểm số mới
                     scoreDisplay.textContent = score.toString();
-                }, 2000); // Thời gian chờ 2 giây
+                }); // Thời gian chờ 2 giây
             }
         }
         // Nếu móc câu vượt khỏi màn hình
