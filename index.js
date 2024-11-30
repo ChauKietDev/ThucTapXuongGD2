@@ -6,6 +6,7 @@ canvas.height = 1400;
 // Điểm số
 let score = 0;
 const scoreDisplay = document.getElementById("score");
+let itemNumber = 20;
 // Tải hình ảnh nhân vật
 const characterImage = new Image();
 characterImage.src = "./image/khunglong.png"; // Đường dẫn ảnh nhân vật
@@ -87,7 +88,7 @@ function generateItems(count) {
     return generatedItems;
 }
 // Tạo danh sách 20 vật phẩm
-const items = generateItems(20);
+const items = generateItems(itemNumber);
 // // Móc câu
 // let hook: Hook = {
 //     x: canvas.width / 2, // Vị trí gốc của móc câu
@@ -156,6 +157,7 @@ function updateHook() {
                     score -= item.value; // Trừ điểm
                 }
                 scoreDisplay.textContent = score.toString(); // Cập nhật hiển thị điểm
+                itemNumber--;
             }
         }
         else {
@@ -228,13 +230,18 @@ function isColliding(x1, y1, x2, y2, radius) {
 }
 // Vòng lặp game
 function gameLoop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (countdownTime > 0) {
-        updateHook();
+    if (itemNumber > 0) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (countdownTime > 0) {
+            updateHook();
+        }
+        drawHook();
+        drawItems();
+        requestAnimationFrame(gameLoop);
     }
-    drawHook();
-    drawItems();
-    requestAnimationFrame(gameLoop);
+    else {
+        setTimeout(window.location.href = "home.html", 1000);
+    }
 }
 // Sự kiện phím
 document.addEventListener("keydown", (e) => {

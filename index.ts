@@ -17,6 +17,7 @@ interface Item {
     isCaught: boolean;
     type: "positive" | "negative"; // Phân biệt vật phẩm
 }
+let itemNumber = 20;
 
 // Định nghĩa kiểu dữ liệu cho móc câu
 interface Hook {
@@ -128,7 +129,7 @@ function generateItems(count: number): Item[] {
 
 
 // Tạo danh sách 20 vật phẩm
-const items: Item[] = generateItems(20);
+const items: Item[] = generateItems(itemNumber);
 
 // // Móc câu
 // let hook: Hook = {
@@ -197,6 +198,7 @@ function updateHook(): void {
                     score -= item.value; // Trừ điểm
                 }
                 scoreDisplay.textContent = score.toString(); // Cập nhật hiển thị điểm
+                itemNumber--;
             }
         } else {
             // Nếu không có vật phẩm được móc, tiếp tục thả móc
@@ -304,15 +306,20 @@ function isColliding(x1: number, y1: number, x2: number, y2: number, radius: num
 
 // Vòng lặp game
 function gameLoop(): void {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (itemNumber > 0) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    if (countdownTime > 0) {
-        updateHook();
+        if (countdownTime > 0) {
+            updateHook();
+        }
+        drawHook();
+        drawItems();
+
+        requestAnimationFrame(gameLoop);
     }
-    drawHook();
-    drawItems();
-
-    requestAnimationFrame(gameLoop);
+    else {
+        setTimeout(window.location.href = "home.html", 1000);
+    }
 }
 
 // Sự kiện phím
