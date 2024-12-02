@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 canvas.width = 800;
@@ -6,6 +15,7 @@ canvas.height = 1400;
 // Điểm số
 let score = 0;
 const scoreDisplay = document.getElementById("score");
+let playApi = "http://localhost:8080/api/v1/playerinfo";
 let itemNumber = 20;
 // Tải hình ảnh nhân vật
 const characterImage = new Image();
@@ -27,6 +37,38 @@ const paddingTop = 400; // Khoảng cách từ cạnh trên của canvas
 const countdownElement = document.getElementById("countdown");
 // Thiết lập thời gian đếm ngược (ví dụ: 10 phút = 600 giây)
 let countdownTime = 60; // Đơn vị: giây
+function updateTurn() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let playerInfoId = Number(localStorage.getItem("playerInfoId"));
+        yield fetch(playApi + `/updateTurns/${playerInfoId}-isPlayed=${true}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: "Plain text data"
+        });
+    });
+}
+function updateScore() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let playerInfo;
+        let playerInfoId = Number(localStorage.getItem("playerInfoId"));
+        let score = Number(scoreDisplay.textContent);
+        console.log(score);
+        playerInfo = yield fetch(playApi + `/${playerInfoId}`).then(res => {
+            return res.json();
+        });
+        playerInfo.highestScore += score;
+        console.log(playerInfo.highestScore);
+        yield fetch(playApi + `/updateInfor/${playerInfoId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(playerInfo)
+        });
+    });
+}
 // Hàm thay đổi thời gian mỗi giây
 function padStart(input, length, padChar) {
     let str = input.toString();
@@ -49,7 +91,10 @@ function startCountdown() {
     const interval = setInterval(() => {
         if (countdownTime <= 0) {
             clearInterval(interval);
+            // updateScore();
             setTimeout(() => {
+                updateTurn();
+                updateScore();
                 window.location.href = "home.html";
             }, 1000);
         }
@@ -240,6 +285,8 @@ function gameLoop() {
         requestAnimationFrame(gameLoop);
     }
     else {
+        updateTurn();
+        updateScore();
         setTimeout(window.location.href = "home.html", 1000);
     }
 }

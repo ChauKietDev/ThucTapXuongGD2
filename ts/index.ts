@@ -7,6 +7,7 @@ canvas.height = 1400;
 // Điểm số
 let score = 0;
 const scoreDisplay = document.getElementById("score") as HTMLElement;
+let playApi = "http://localhost:8080/api/v1/playerinfo";
 
 interface Item {
     x: number;
@@ -60,6 +61,34 @@ const countdownElement = document.getElementById("countdown") as HTMLElement;
 // Thiết lập thời gian đếm ngược (ví dụ: 10 phút = 600 giây)
 let countdownTime = 60; // Đơn vị: giây
 
+async function updateTurn() {
+    let playerInfoId: number = Number(localStorage.getItem("playerInfoId"));
+    await fetch(playApi + `/updateTurns/${playerInfoId}-isPlayed=${true}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: "Plain text data"
+    });
+}
+async function updateScore() {
+    let playerInfo: PlayerInfo;
+    let playerInfoId: number = Number(localStorage.getItem("playerInfoId"));
+    let score: number = Number(scoreDisplay.textContent);
+    console.log(score);
+    playerInfo = await fetch(playApi + `/${playerInfoId}`).then(res => {
+        return res.json();
+    });
+    playerInfo.highestScore += score;
+    console.log(playerInfo.highestScore);
+    await fetch(playApi + `/updateInfor/${playerInfoId}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(playerInfo) 
+    });
+}
 // Hàm thay đổi thời gian mỗi giây
 function padStart(input: string | number, length: number, padChar: string): string {
     let str = input.toString();
@@ -86,7 +115,11 @@ function startCountdown() {
     const interval = setInterval(() => {
         if (countdownTime <= 0) {
             clearInterval(interval);
+            // updateScore();
+
             setTimeout(() => {
+                updateTurn();
+                updateScore();
                 window.location.href = "home.html";
             }, 1000)
         } else {
@@ -294,9 +327,6 @@ function drawItems() {
     }
 }
 
-
-
-
 // Kiểm tra va chạm hình tròn
 function isColliding(x1: number, y1: number, x2: number, y2: number, radius: number): boolean {
     const dx = x1 - x2;
@@ -318,6 +348,8 @@ function gameLoop(): void {
         requestAnimationFrame(gameLoop);
     }
     else {
+        updateTurn();
+        updateScore();
         setTimeout(window.location.href = "home.html", 1000);
     }
 }
