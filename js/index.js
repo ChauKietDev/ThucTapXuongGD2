@@ -16,10 +16,22 @@ canvas.height = 1400;
 let score = 0;
 const scoreDisplay = document.getElementById("score");
 let playApi = "http://localhost:8080/api/v1/playerinfo";
+let boughtCharApi = "http://localhost:8080/api/v1/shop";
+let selectedChar = null;
 let itemNumber = 20;
 // Tải hình ảnh nhân vật
 const characterImage = new Image();
-characterImage.src = "./image/khunglong.png"; // Đường dẫn ảnh nhân vật
+function curSelectedChar() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let playerInfoId = Number(localStorage.getItem("playerInfoId"));
+        selectedChar = yield fetch(boughtCharApi + `/boughtChar/selectedChar/playerId-${playerInfoId}`).then(res => {
+            return res.json();
+        });
+        characterImage.src = "./image/" + (selectedChar === null || selectedChar === void 0 ? void 0 : selectedChar.charBuy.image); // Đường dẫn ảnh nhân vật
+    });
+}
+curSelectedChar();
+updateTurn();
 characterImage.onload = () => {
     console.log("Hình ảnh nhân vật đã tải xong!");
 };
@@ -59,7 +71,6 @@ function updateScore() {
             return res.json();
         });
         playerInfo.highestScore += score;
-        console.log(playerInfo.highestScore);
         yield fetch(playApi + `/updateInfor/${playerInfoId}`, {
             method: "PUT",
             headers: {
@@ -93,7 +104,6 @@ function startCountdown() {
             clearInterval(interval);
             // updateScore();
             setTimeout(() => {
-                updateTurn();
                 updateScore();
                 window.location.href = "home.html";
             }, 1000);
@@ -285,7 +295,6 @@ function gameLoop() {
         requestAnimationFrame(gameLoop);
     }
     else {
-        updateTurn();
         updateScore();
         setTimeout(window.location.href = "home.html", 1000);
     }

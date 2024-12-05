@@ -8,6 +8,8 @@ canvas.height = 1400;
 let score = 0;
 const scoreDisplay = document.getElementById("score") as HTMLElement;
 let playApi = "http://localhost:8080/api/v1/playerinfo";
+let boughtCharApi = "http://localhost:8080/api/v1/shop";
+let selectedChar: BoughtChar | null = null;
 
 interface Item {
     x: number;
@@ -34,10 +36,17 @@ interface Hook {
     attachedItem: Item | null; // Vật phẩm đang được kéo (nếu có)
 }
 
-
 // Tải hình ảnh nhân vật
 const characterImage = new Image();
-characterImage.src = "./image/khunglong.png"; // Đường dẫn ảnh nhân vật
+async function curSelectedChar() {
+    let playerInfoId: number = Number(localStorage.getItem("playerInfoId"));
+    selectedChar = await fetch(boughtCharApi + `/boughtChar/selectedChar/playerId-${playerInfoId}`).then(res => {
+        return res.json();
+    });
+    characterImage.src = "./image/" + selectedChar?.charBuy.image; // Đường dẫn ảnh nhân vật
+}
+curSelectedChar();
+updateTurn();
 
 characterImage.onload = () => {
     console.log("Hình ảnh nhân vật đã tải xong!");
@@ -80,7 +89,6 @@ async function updateScore() {
         return res.json();
     });
     playerInfo.highestScore += score;
-    console.log(playerInfo.highestScore);
     await fetch(playApi + `/updateInfor/${playerInfoId}`, {
         method: "PUT",
         headers: {
@@ -118,7 +126,6 @@ function startCountdown() {
             // updateScore();
 
             setTimeout(() => {
-                updateTurn();
                 updateScore();
                 window.location.href = "home.html";
             }, 1000)
@@ -348,7 +355,6 @@ function gameLoop(): void {
         requestAnimationFrame(gameLoop);
     }
     else {
-        updateTurn();
         updateScore();
         setTimeout(window.location.href = "home.html", 1000);
     }

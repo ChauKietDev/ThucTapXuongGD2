@@ -35,16 +35,16 @@ body {
 
   
   header {
-    margin-top: 50px;
+    margin-top: 30px;
     text-align: center;
   }
   
   .header-image {
-    height: 60px;
+    height: 100px;
   }
     
   .available-coins {
-    margin-top: 20px;
+    margin-top: 10px;
   }
 
   .available-coins p {
@@ -54,16 +54,19 @@ body {
   
   .available-coins h1 {
     margin: 0;
-    font-size: 50px;
+    font-size: 30px;
     font-weight: bold;
     color: #ffc107;
   }
   
   .shop {
-    margin: 20px 15px;
+    margin: 10px 15px;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    gap: 20px; /* Khoảng cách giữa các ô */
+    justify-items: center; /* Canh giữa nội dung trong các ô */
+    align-items: start; /* Canh trên nội dung nếu có chiều cao khác nhau */
+    min-height: calc(120px * 2 + 20px); /* Ít nhất đủ chỗ cho 2 hàng */
   }
   
   .item {
@@ -72,12 +75,17 @@ body {
     padding: 2px;
     text-align: center;
     position: relative;
+    width: 100%; /* Đảm bảo các item có cùng kích thước */
+    height: 120px; /* Cố định chiều cao */
+    box-sizing: border-box;
+    margin-bottom: 10px; /* Đảm bảo padding không làm tăng kích thước */
   }
   
   .item img {
     width: 80px;
     height: 80px;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
+    object-fit: contain;
   }
   
   .price {
@@ -93,6 +101,34 @@ body {
     box-sizing: border-box; /* Ensures padding is included in the width */
     text-align: center; /* Centers the text */
   }
+  .pagination {
+    position: absolute; /* Đặt thanh phân trang cố định bên trong container */
+    bottom: 110px; /* Khoảng cách so với đáy container */
+    left: 50%; /* Canh giữa theo chiều ngang */
+    transform: translateX(-50%); /* Đảm bảo vị trí chính giữa */
+    display: flex;
+    gap: 5px;
+}
+
+.pagination-btn {
+  width: 10px; /* Đường kính của chấm */
+  height: 10px; /* Đường kính của chấm */
+  background-color: white; /* Màu của chấm */
+  border: none; /* Bỏ viền */
+  border-radius: 50%; /* Tạo hình tròn */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.pagination-btn.active {
+    background-color: #007bff;
+    color: white;
+    pointer-events: none;
+}
+
+.pagination-btn:hover:not(.active) {
+    background-color: #f1f1f1;
+}
   /* Footer styles */
   .bottom-nav {
     display: flex;
@@ -110,7 +146,7 @@ body {
 .nav-item:hover {
     color: #ffc107;
 }
-i{
+i {
     font-size: 20px;
 }
   
