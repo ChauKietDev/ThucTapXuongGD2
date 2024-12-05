@@ -17,8 +17,8 @@ Trước khi chạy trò chơi, bạn cần cài đặt các công cụ sau:
 - **Solana**: Dùng để tương tác với blockchain Solana.
 - Cài đặt extension WSL wsl --install npm install 
 - Cài đặt nodejs trên ubuntu:
-   curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-   sudo apt-get install -y nodejs
+- curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+- sudo apt-get install -y nodejs
 - Cài đặt solana sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)" 
 - npm install @solana/web3.js
 
