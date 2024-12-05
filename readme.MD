@@ -21,7 +21,7 @@ Trước khi chạy trò chơi, bạn cần cài đặt các công cụ sau:
 - sudo apt-get install -y nodejs
 - Cài đặt solana: sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)" 
 - npm install @solana/web3.js
-
+- Chạy server nodejs: cd api -> node app.js
 ### Chạy Game Backend
 
 Mã nguồn backend của trò chơi được lưu trữ trên GitHub. Bạn có thể chạy backend bằng IntelliJ IDEA hoặc Visual Studio Code (VS Code). Dưới đây là các bước cài đặt cho cả hai lựa chọn.
