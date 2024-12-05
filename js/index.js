@@ -1,3 +1,16 @@
+<<<<<<< HEAD:index.js
+=======
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+>>>>>>> 49b62ccc76b7fcb1e5f6e41ee00008373a5b4c78:js/index.js
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 canvas.width = 800;
@@ -5,9 +18,23 @@ canvas.height = 1400;
 // Điểm số
 let score = 0;
 const scoreDisplay = document.getElementById("score");
+let playApi = "http://localhost:8080/api/v1/playerinfo";
+let boughtCharApi = "http://localhost:8080/api/v1/shop";
+let selectedChar = null;
+let itemNumber = 20;
 // Tải hình ảnh nhân vật
 const characterImage = new Image();
-characterImage.src = "./image/khunglong.png"; // Đường dẫn ảnh nhân vật
+function curSelectedChar() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let playerInfoId = Number(localStorage.getItem("playerInfoId"));
+        selectedChar = yield fetch(boughtCharApi + `/boughtChar/selectedChar/playerId-${playerInfoId}`).then(res => {
+            return res.json();
+        });
+        characterImage.src = "./image/" + (selectedChar === null || selectedChar === void 0 ? void 0 : selectedChar.charBuy.image); // Đường dẫn ảnh nhân vật
+    });
+}
+curSelectedChar();
+updateTurn();
 characterImage.onload = () => {
     console.log("Hình ảnh nhân vật đã tải xong!");
 };
@@ -21,6 +48,75 @@ itemImage.onload = () => {
     generateItems(5);
 };
 const paddingTop = 400; // Khoảng cách từ cạnh trên của canvas
+// Lấy các phần tử HTML
+const countdownElement = document.getElementById("countdown");
+// Thiết lập thời gian đếm ngược (ví dụ: 10 phút = 600 giây)
+let countdownTime = 60; // Đơn vị: giây
+function updateTurn() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let playerInfoId = Number(localStorage.getItem("playerInfoId"));
+        yield fetch(playApi + `/updateTurns/${playerInfoId}-isPlayed=${true}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: "Plain text data"
+        });
+    });
+}
+function updateScore() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let playerInfo;
+        let playerInfoId = Number(localStorage.getItem("playerInfoId"));
+        let score = Number(scoreDisplay.textContent);
+        console.log(score);
+        playerInfo = yield fetch(playApi + `/${playerInfoId}`).then(res => {
+            return res.json();
+        });
+        playerInfo.highestScore += score;
+        yield fetch(playApi + `/updateInfor/${playerInfoId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(playerInfo)
+        });
+    });
+}
+// Hàm thay đổi thời gian mỗi giây
+function padStart(input, length, padChar) {
+    let str = input.toString();
+    while (str.length < length) {
+        str = padChar + str;
+    }
+    return str;
+}
+// Hàm định dạng thời gian (hh:mm:ss)
+function formatTime(seconds) {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${secs >= 10 ? padStart(secs, 2, "0") : secs}`;
+}
+// Hàm bắt đầu đếm ngược
+function startCountdown() {
+    // Hiển thị giá trị ban đầu ngay lập tức
+    countdownElement.textContent = "Time: " + countdownTime + "s";
+    const interval = setInterval(() => {
+        if (countdownTime <= 0) {
+            clearInterval(interval);
+            // updateScore();
+            setTimeout(() => {
+                updateScore();
+                window.location.href = "home.html";
+            }, 1000);
+        }
+        else {
+            countdownTime--;
+            countdownElement.textContent = "Time: " + formatTime(countdownTime) + "s";
+        }
+    }, 1000); // Cập nhật mỗi giây
+}
 function generateItems(count) {
     const generatedItems = [];
     for (let i = 0; i < count; i++) {
@@ -50,7 +146,7 @@ function generateItems(count) {
     return generatedItems;
 }
 // Tạo danh sách 20 vật phẩm
-const items = generateItems(15);
+const items = generateItems(itemNumber);
 // // Móc câu
 // let hook: Hook = {
 //     x: canvas.width / 2, // Vị trí gốc của móc câu
@@ -119,6 +215,7 @@ function updateHook() {
                     score -= item.value; // Trừ điểm
                 }
                 scoreDisplay.textContent = score.toString(); // Cập nhật hiển thị điểm
+                itemNumber--;
             }
         }
         else {
@@ -134,7 +231,7 @@ function updateHook() {
                 }
             }
         }
-        // Nếu móc câu vượt ra ngoài màn hình
+        // Nếu móc câu vượt khỏi màn hình
         if (hook.targetX < 0 || hook.targetX > canvas.width || hook.targetY > canvas.height) {
             hook.isFiring = false; // Reset trạng thái thả móc
             hook.targetX = hook.x;
@@ -191,11 +288,19 @@ function isColliding(x1, y1, x2, y2, radius) {
 }
 // Vòng lặp game
 function gameLoop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    updateHook();
-    drawHook();
-    drawItems();
-    requestAnimationFrame(gameLoop);
+    if (itemNumber > 0) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (countdownTime > 0) {
+            updateHook();
+        }
+        drawHook();
+        drawItems();
+        requestAnimationFrame(gameLoop);
+    }
+    else {
+        updateScore();
+        setTimeout(window.location.href = "home.html", 1000);
+    }
 }
 // Sự kiện phím
 document.addEventListener("keydown", (e) => {
@@ -205,3 +310,5 @@ document.addEventListener("keydown", (e) => {
 });
 // Bắt đầu game
 gameLoop();
+// Khởi chạy đếm ngược
+startCountdown();

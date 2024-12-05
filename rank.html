@@ -149,71 +149,32 @@
 </head>
 
 <body>
+    <div id="customAlert">
+        <div class="alert-header">
+            <button type="submit" onclick="closePop()">X</button>
+        </div>
+        <p id="timer" style="color: black;"></p>
+    </div>
     <div class="phone-container">
         <div class="phone">
             <header>
                 <h1 class="title">Player Rank Score</h1>
-                <p class="player-count">2,024 Players</p>
+                <p class="player-count" id="playerNumber"></p>
             </header>
             <main>
-                <div class="rank-list">
+                <div class="rank-list" id="ranklist">
                     <!-- Example of ranked player -->
-                    <div class="rank-item highlight">
-                        <div class="rank">7+ Me</div>
-                        <div class="score">
-                            <img src="./image/diamond.png" alt="Diamond" class="diamond-icon">
-                            100,235,651
-                        </div>
-                    </div>
                     <!-- Other players -->
-                    <div class="rank-item">
-                        <div class="rank">1. Alxte Hein</div>
-                        <div class="score">
-                            <img src="./image/diamond.png" alt="Diamond" class="diamond-icon">
-                            100,235,651
-                        </div>
-                    </div>
-                    <div class="rank-item">
-                        <div class="rank">2. Kkashihi</div>
-                        <div class="score">
-                            <img src="./image/diamond.png" alt="Diamond" class="diamond-icon">
-                            100,235,651
-                        </div>
-                    </div>
-                    <div class="rank-item">
-                        <div class="rank">3. Kiệt Lạch.</div>
-                        <div class="score">
-                            <img src="./image/diamond.png" alt="Diamond" class="diamond-icon">
-                            100,235,651
-                        </div>
-                    </div>
-                    <div class="rank-item">
-                        <div class="rank">4. Nghĩa Lỗ</div>
-                        <div class="score">
-                            <img src="./image/diamond.png" alt="Diamond" class="diamond-icon">
-                            100,235,651
-                        </div>
-                    </div>
-                    <div class="rank-item">
-                        <div class="rank">5. Hcshi Bacha La</div>
-                        <div class="score">
-                            <img src="./image/diamond.png" alt="Diamond" class="diamond-icon">
-                            100,235,651
-                        </div>
-                    </div>
-                    <div class="rank-item">
-                        <div class="rank">6. Bakha Di</div>
-                        <div class="score">
-                            <img src="./image/diamond.png" alt="Diamond" class="diamond-icon">
-                            100,235,651
-                        </div>
-                    </div>
                 </div>
             </main>
             <div class="game-section">
                 <button class="play-button">
-                    <a href="/test.html" style="text-decoration: none; color: black;">Play Game (Your Attempt: 6/6)</a>
-                </button>            </div>
+                    <a href="" id="play" style="text-decoration: none; color: black;">
+                        Play Game (Your Attempt: 
+                        <span id="currentTurns"></span>/<span id="numberTurns"></span>)
+                    </a>                
+                </button>            
+            </div>
             <footer>
                 <nav class="bottom-nav">
                     <div class="nav-item">
@@ -226,7 +187,11 @@
                             <i class="fa-solid fa-chart-column"></i>
                         </a>
                     </div>
-                    <div class="nav-item"><i class="fa-solid fa-shop"></i></div>
+                    <div class="nav-item">
+                        <a href="/shop.html" style="text-decoration: none; color: white;">
+                            <i class="fa-solid fa-shop"></i>
+                        </a>
+                    </div>
                     <div class="nav-item">
                         <a href="/wallet.html" style="text-decoration: none; color: white;">
                             <i class="fa-solid fa-wallet"></i>
@@ -236,7 +201,6 @@
             </footer>
         </div>
     </div>
-    <script src="script.js"></script>
+    <script src="js/rank.js"></script>
 </body>
-
 </html>

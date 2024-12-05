@@ -2,6 +2,7 @@
   "name": "moonbix",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -15,7 +16,8 @@
     "@solana/web3.js": "^1.95.5",
     "cors": "^2.8.5",
     "express": "^4.21.1",
-    "jsdom": "^25.0.1"
+    "jsdom": "^25.0.1",
+    "qrcode": "^1.5.4"
   },
   "devDependencies": {
     "@types/pg": "^8.11.10"

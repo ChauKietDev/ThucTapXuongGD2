@@ -48,6 +48,19 @@
             text-align: center;
         }
 
+        .user{
+            background: linear-gradient(#539cd2, #50cdde);
+            border-top-left-radius: 20px;
+            border-bottom-left-radius: 20px;
+            padding: 5px 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            color: #fdde57; /* Gold color for text */
+            font-size: 19px;
+            font-weight: bold;
+            width: fit-content;
+            margin-left: auto;
+        }
+        
         .logo {
             font-size: 24px;
             color: #ffc107;
@@ -105,13 +118,54 @@
         i{
             font-size: 20px;
         }
+         /* CSS cho popup */
+         #customAlert {
+            display: none;
+            position: fixed;
+            width: 500px;
+            top: 6%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border: 2px solid #ccc;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        .alert-header {
+            display: flex;
+            justify-content: flex-end;
+        }
+        #customAlert button {
+            padding: 10px 20px;
+            margin-top: 10px;
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            border-radius: 100%;
+            cursor: pointer;
+        }
+
+        #customAlert button:hover {
+            background-color: #b30900;
+        }
     </style>
 </head>
 
 <body>
+    <div id="customAlert">
+        <div class="alert-header">
+            <button type="submit" onclick="closePopup()">X</button>
+        </div>
+        <p id="timer" style="color: black;"></p>
+    </div>
     <div class="phone-container">
         <div class="phone">
             <header>
+                <div class="user">
+                    <i class="fa-solid fa-user" style="color: white;"></i>
+                    <span id="username"></span>
+                </div>
                 <img src="./image/sol.png" style="width: 100px; height: 100px;" alt="">
                 <h1 class="logo">GOLDIAN</h1>
                 <div class="bonus">BONUS GIVEAWAY</div>
@@ -120,7 +174,10 @@
                 <div class="game-section">
                     <img src="./image/khunglong.png" alt="Dinosaur" class="dino">
                     <button class="play-button">
-                        <a href="/test.html" style="text-decoration: none; color: black;">Play Game (Your Attempt: 6/6)</a>
+                        <a href="" id="play" style="text-decoration: none; color: black;">
+                            Play Game (Your Attempt: 
+                            <span id="currentTurns"></span>/<span id="numberTurns"></span>)
+                        </a>
                     </button>
                 </div>
             </main>
@@ -136,7 +193,11 @@
                             <i class="fa-solid fa-chart-column"></i>
                         </a>
                     </div>
-                    <div class="nav-item"><i class="fa-solid fa-shop"></i></div>
+                    <div class="nav-item">
+                        <a href="/shop.html" style="text-decoration: none; color: white;">
+                            <i class="fa-solid fa-shop"></i>
+                        </a>
+                    </div>
                     <div class="nav-item">
                         <a href="/wallet.html" style="text-decoration: none; color: white;">
                             <i class="fa-solid fa-wallet"></i>
@@ -146,7 +207,8 @@
             </footer>
         </div>
     </div>
-    <script src="script.js"></script>
+    <input type="hidden" id="timeAddTurn">
 </body>
-
+<script src="js/home.js">
+</script>
 </html>

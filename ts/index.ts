@@ -7,6 +7,9 @@ canvas.height = 1400;
 // Điểm số
 let score = 0;
 const scoreDisplay = document.getElementById("score") as HTMLElement;
+let playApi = "http://localhost:8080/api/v1/playerinfo";
+let boughtCharApi = "http://localhost:8080/api/v1/shop";
+let selectedChar: BoughtChar | null = null;
 
 interface Item {
     x: number;
@@ -17,6 +20,7 @@ interface Item {
     isCaught: boolean;
     type: "positive" | "negative"; // Phân biệt vật phẩm
 }
+let itemNumber = 20;
 
 // Định nghĩa kiểu dữ liệu cho móc câu
 interface Hook {
@@ -32,10 +36,17 @@ interface Hook {
     attachedItem: Item | null; // Vật phẩm đang được kéo (nếu có)
 }
 
-
 // Tải hình ảnh nhân vật
 const characterImage = new Image();
-characterImage.src = "./image/khunglong.png"; // Đường dẫn ảnh nhân vật
+async function curSelectedChar() {
+    let playerInfoId: number = Number(localStorage.getItem("playerInfoId"));
+    selectedChar = await fetch(boughtCharApi + `/boughtChar/selectedChar/playerId-${playerInfoId}`).then(res => {
+        return res.json();
+    });
+    characterImage.src = "./image/" + selectedChar?.charBuy.image; // Đường dẫn ảnh nhân vật
+}
+curSelectedChar();
+updateTurn();
 
 characterImage.onload = () => {
     console.log("Hình ảnh nhân vật đã tải xong!");
@@ -52,6 +63,78 @@ itemImage.onload = () => {
 };
 
 const paddingTop = 400; // Khoảng cách từ cạnh trên của canvas
+
+// Lấy các phần tử HTML
+const countdownElement = document.getElementById("countdown") as HTMLElement;
+
+// Thiết lập thời gian đếm ngược (ví dụ: 10 phút = 600 giây)
+let countdownTime = 60; // Đơn vị: giây
+
+async function updateTurn() {
+    let playerInfoId: number = Number(localStorage.getItem("playerInfoId"));
+    await fetch(playApi + `/updateTurns/${playerInfoId}-isPlayed=${true}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: "Plain text data"
+    });
+}
+async function updateScore() {
+    let playerInfo: PlayerInfo;
+    let playerInfoId: number = Number(localStorage.getItem("playerInfoId"));
+    let score: number = Number(scoreDisplay.textContent);
+    console.log(score);
+    playerInfo = await fetch(playApi + `/${playerInfoId}`).then(res => {
+        return res.json();
+    });
+    playerInfo.highestScore += score;
+    await fetch(playApi + `/updateInfor/${playerInfoId}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(playerInfo) 
+    });
+}
+// Hàm thay đổi thời gian mỗi giây
+function padStart(input: string | number, length: number, padChar: string): string {
+    let str = input.toString();
+    while (str.length < length) {
+        str = padChar + str;
+    }
+    return str;
+}
+
+// Hàm định dạng thời gian (hh:mm:ss)
+function formatTime(seconds: number): string {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    return `${secs >= 10 ? padStart(secs, 2, "0") : secs}`;
+}
+
+// Hàm bắt đầu đếm ngược
+function startCountdown() {
+    // Hiển thị giá trị ban đầu ngay lập tức
+    countdownElement.textContent = "Time: " + countdownTime + "s";
+
+    const interval = setInterval(() => {
+        if (countdownTime <= 0) {
+            clearInterval(interval);
+            // updateScore();
+
+            setTimeout(() => {
+                updateScore();
+                window.location.href = "home.html";
+            }, 1000)
+        } else {
+            countdownTime--;
+            countdownElement.textContent = "Time: " + formatTime(countdownTime) + "s";
+        }
+    }, 1000); // Cập nhật mỗi giây
+}
 
 function generateItems(count: number): Item[] {
     const generatedItems: Item[] = [];
@@ -86,7 +169,7 @@ function generateItems(count: number): Item[] {
 
 
 // Tạo danh sách 20 vật phẩm
-const items: Item[] = generateItems(15);
+const items: Item[] = generateItems(itemNumber);
 
 // // Móc câu
 // let hook: Hook = {
@@ -155,6 +238,7 @@ function updateHook(): void {
                     score -= item.value; // Trừ điểm
                 }
                 scoreDisplay.textContent = score.toString(); // Cập nhật hiển thị điểm
+                itemNumber--;
             }
         } else {
             // Nếu không có vật phẩm được móc, tiếp tục thả móc
@@ -171,7 +255,7 @@ function updateHook(): void {
             }
         }
 
-        // Nếu móc câu vượt ra ngoài màn hình
+        // Nếu móc câu vượt khỏi màn hình
         if (hook.targetX < 0 || hook.targetX > canvas.width || hook.targetY > canvas.height) {
             hook.isFiring = false; // Reset trạng thái thả móc
             hook.targetX = hook.x;
@@ -250,9 +334,6 @@ function drawItems() {
     }
 }
 
-
-
-
 // Kiểm tra va chạm hình tròn
 function isColliding(x1: number, y1: number, x2: number, y2: number, radius: number): boolean {
     const dx = x1 - x2;
@@ -262,13 +343,21 @@ function isColliding(x1: number, y1: number, x2: number, y2: number, radius: num
 
 // Vòng lặp game
 function gameLoop(): void {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (itemNumber > 0) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    updateHook();
-    drawHook();
-    drawItems();
+        if (countdownTime > 0) {
+            updateHook();
+        }
+        drawHook();
+        drawItems();
 
-    requestAnimationFrame(gameLoop);
+        requestAnimationFrame(gameLoop);
+    }
+    else {
+        updateScore();
+        setTimeout(window.location.href = "home.html", 1000);
+    }
 }
 
 // Sự kiện phím
@@ -280,3 +369,5 @@ document.addEventListener("keydown", (e: KeyboardEvent) => {
 
 // Bắt đầu game
 gameLoop();
+// Khởi chạy đếm ngược
+startCountdown();
