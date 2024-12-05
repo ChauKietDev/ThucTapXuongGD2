@@ -7,7 +7,6 @@
     <title>Login Page</title>
     <link rel="stylesheet" href="css/signup.css">
 </head>
-
 <body>
     <div class="phone-container">
         <div class="phone">
@@ -17,25 +16,25 @@
                     <div class="form-group">
                         <label for="username">Username</label>
                         <input type="text" id="username" placeholder="Enter your username">
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" placeholder="Enter your email">
+                        <p class="check" id="checkUsername"></p>
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
                         <input type="password" id="password" placeholder="Enter your password">
+                        <p class="check" id="checkPassword"></p>
                     </div>
                     <div class="form-group">
                         <label for="confirm-password">Confirm Password</label>
                         <input type="password" id="confirm-password" placeholder="Confirm your password">
+                        <p class="check" id="submitPassword"></p>
                     </div>
-                    <button type="submit" class="register-button">Sign Up</button>
+                    <button type="submit" class="register-button" id="signup">Sign Up</button>
                 </form>
-                <p class="login-link">Already have an account? <a href="#">Log In</a></p>
+                <p class="login-link">Already have an account? <a href="/login.html">Log In</a></p>
+                <h4 style="color: rgb(0, 255, 21); font-size: 15px;" id="message"></h4>
             </div>
         </div>
     </div>
 </body>
-
+<script src="js/signup.js"></script>
 </html>

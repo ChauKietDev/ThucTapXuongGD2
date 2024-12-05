@@ -50,7 +50,7 @@ body {
   }
   
   .register-container .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 25px;
     text-align: left;
   }
   
@@ -68,6 +68,10 @@ body {
     border-radius: 5px;
     box-sizing: border-box;
     outline: none;
+  }
+  .register-container .form-group .check {
+    color: red;
+    font-size: 12px;
   }
   
   .register-container .register-button {
