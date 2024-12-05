@@ -1,5 +1,0 @@
-test-ledger/rocksdb/000031.sst filter=lfs diff=lfs merge=lfs -text
-test-ledger/rocksdb/000033.sst filter=lfs diff=lfs merge=lfs -text
-test-ledger/rocksdb/000020.log filter=lfs diff=lfs merge=lfs -text
-test-ledger/rocksdb/000030.log filter=lfs diff=lfs merge=lfs -text
-test-ledger/rocksdb/000032.log filter=lfs diff=lfs merge=lfs -text
