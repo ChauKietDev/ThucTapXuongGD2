@@ -66,13 +66,19 @@ function decreaseScore(score) {
         if ((curPlayerInfo === null || curPlayerInfo === void 0 ? void 0 : curPlayerInfo.highestScore) != null) {
             curPlayerInfo.highestScore -= score;
         }
-        yield fetch(pApi + `/updateInfor/${playerInfoId}`, {
+        let res = yield fetch(pApi + `/updateInfor/${playerInfoId}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(curPlayerInfo)
         });
+        if (res.ok) {
+            return res.json();
+        }
+        else {
+            return null;
+        }
     });
 }
 function currentSelectedChar() {
@@ -95,13 +101,40 @@ function viewSelectedChar() {
         if (selectedChar != null) {
             str += `<img src="image/${selectedChar.charBuy.image}" alt="${selectedChar.charBuy.name}" class="header-image">
                 <div class="available-coins">
-                    <h1>Current character</h1>
+                    <h1>Your character</h1>
                 </div>`;
             if (viewSelectedChar) {
                 viewSelectedChar.innerHTML = str;
             }
         }
     });
+}
+function changeColor(char) {
+    const itemElement = document.getElementById("item " + char.id.toString());
+    let btnElement;
+    if (itemElement) {
+        btnElement = document.getElementById(char.id.toString());
+        if (btnElement) {
+            let isSelectOrBuy = btnElement.textContent;
+            switch (isSelectOrBuy === null || isSelectOrBuy === void 0 ? void 0 : isSelectOrBuy.trim()) {
+                case "Selected": {
+                    // itemElement.style.backgroundColor = "#26c6da";
+                    btnElement.style.backgroundColor = "green";
+                    btnElement.style.color = "white";
+                    break;
+                }
+                case "Select": {
+                    itemElement.style.backgroundColor = "#19233d";
+                    btnElement.style.backgroundColor = "#26c6da";
+                    break;
+                }
+                default: {
+                    itemElement.style.backgroundColor = "grey";
+                    btnElement.style.backgroundColor = "grey";
+                }
+            }
+        }
+    }
 }
 function selectOrBuy(id, currentText, event) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -118,6 +151,10 @@ function selectOrBuy(id, currentText, event) {
             if (changeBoughtCharBefore) {
                 changeBoughtCharBefore.textContent = "Select";
                 changeBoughtCharBefore.removeAttribute("disabled");
+                if (resultBoughtChar) {
+                    changeColor(resultBoughtChar.charBuy);
+                    console.log("Changed color select");
+                }
             }
             resultBoughtChar = null;
             // Thay đổi trạng thái nhân vật đã chọn thành true
@@ -125,6 +162,10 @@ function selectOrBuy(id, currentText, event) {
             if (resultBoughtChar != null && boughtCharElement) {
                 boughtCharElement.textContent = "Selected";
                 boughtCharElement.setAttribute("disabled", "true");
+                if (resultBoughtChar) {
+                    changeColor(resultBoughtChar.charBuy);
+                    console.log("changed color selected");
+                }
                 viewSelectedChar();
             }
         }
@@ -135,10 +176,22 @@ function selectOrBuy(id, currentText, event) {
                 if (confirm("Are you sure to want to buy this character?")) {
                     if (currentPlayerInfo.highestScore >= points) {
                         resultBoughtChar = yield addBoughtChar(playerInfoId, id);
-                        decreaseScore(points);
+                        let newPlayerInfo = yield decreaseScore(points);
                         if (resultBoughtChar != null && boughtCharElement) {
+                            changeColor(resultBoughtChar.charBuy);
                             boughtCharElement.textContent = "Select";
                         }
+                        let scoreElement = document.getElementById("score");
+                        if (scoreElement && newPlayerInfo) {
+                            scoreElement.innerHTML =
+                                `<img src="./image/diamond.png" alt="Diamond Icon" class="diamond-icon">`
+                                    + newPlayerInfo.highestScore;
+                        }
+                        if (resultBoughtChar) {
+                            changeColor(resultBoughtChar.charBuy);
+                            console.log("changed color buy");
+                        }
+                        alert("Bought character!");
                     }
                     else {
                         alert("Not enough points!");
@@ -205,17 +258,15 @@ function loadCharacter(page) {
         let str = "";
         characters = yield fetchCharacters(page, itemsPerPage);
         for (const char of characters) {
-            // let checkBought: boolean = await fetch(charApi + `/checkBought/${playerInfoId}-${char.id}`).then(res => {
-            //     return res.json();
-            // });
             let boughtChar = null;
             let res = yield fetch(charApi + `/boughtChar/${playerInfoId}-${char.id}`);
             if (res.ok) {
                 boughtChar = yield res.json();
             }
             str += `
-            <div class="item">
-                <img src="image/${char.image}" alt="${char.name}">
+            <div class="item" id="item ${char.id}">
+                <img src="image/${char.image}">
+                <h6 class="charname">${char.name}</h6>
                 <button type="submit" class="price" data-id="${char.id}" id="${char.id}">
                     ${boughtChar != null ? (boughtChar.isSelected ? 'Selected' : 'Select')
                 : char.coins + " points"}
@@ -225,6 +276,9 @@ function loadCharacter(page) {
         const shopElement = document.getElementById("shop");
         if (shopElement) {
             shopElement.innerHTML = str;
+        }
+        for (const char of characters) {
+            changeColor(char);
         }
         const buttons = document.querySelectorAll(".price");
         buttons.forEach(button => {
@@ -237,23 +291,21 @@ function loadCharacter(page) {
         createPagination(page);
     });
 }
-function getSelectedChar() {
+function loadPlayer() {
     return __awaiter(this, void 0, void 0, function* () {
-        let selectedChar;
-        let str = "";
-        selectedChar = yield fetch(charApi + `/boughtChar/selectedChar/playerId-${playerInfoId}`).then(res => {
-            return res.json();
-        });
-        str += `
-        <img src="image/${selectedChar.charBuy.image}" alt="${selectedChar.charBuy.name}" class="header-image">
-        <div class="available-coins">
-            <h1>Your character</h1>
-        </div>`;
-        const selectedElement = document.getElementById("selected");
-        if (selectedElement) {
-            selectedElement.innerHTML = str;
+        let currentPlayerInfo;
+        currentPlayerInfo = yield getPlayerInfo();
+        const userElement = document.getElementById("username");
+        if (userElement && currentPlayerInfo) {
+            userElement.innerHTML = currentPlayerInfo.user.username;
+        }
+        const scoreElement = document.getElementById("score");
+        if (scoreElement && currentPlayerInfo) {
+            scoreElement.innerHTML =
+                `<img src="./image/diamond.png" alt="Diamond Icon" class="diamond-icon">` + currentPlayerInfo.highestScore;
         }
     });
 }
-getSelectedChar();
+loadPlayer();
+viewSelectedChar();
 loadCharacter(currentPage);

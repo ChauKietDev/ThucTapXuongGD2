@@ -40,11 +40,48 @@ body {
   }
   
   .header-image {
+    margin-top: 30px;
     height: 100px;
+  }
+
+  .user{
+    background: linear-gradient(#539cd2, #50cdde);
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    padding: 5px 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    color: #fdde57; /* Gold color for text */
+    font-size: 19px;
+    font-weight: bold;
+    width: fit-content;
+    margin-left: auto;
+    margin-top: -10px;
+  }
+
+  .diamond-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 5px;
+  }
+
+  .score {
+    position: absolute;
+    top: 99px;
+    right: 34.5%; /* Căn giữa theo trục X */
+    transform: translateX(-50%);
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center; /* Đảm bảo văn bản nằm giữa trục ngang */
+    align-items: center; /* Căn giữa trục dọc */
+    min-width: 100px; /* Đặt chiều rộng tối thiểu */
+    height: 40px; /* Đặt chiều cao cố định */
+    background-color: rgba(0, 0, 0, 0.1); /* Nếu muốn có nền */
+    border-radius: 8px; /* Tùy chọn: Bo góc nếu muốn */
   }
     
   .available-coins {
-    margin-top: 10px;
+    margin-top: 15px;
   }
 
   .available-coins p {
@@ -60,13 +97,14 @@ body {
   }
   
   .shop {
-    margin: 10px 15px;
+    margin: 5px 15px;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px; /* Khoảng cách giữa các ô */
     justify-items: center; /* Canh giữa nội dung trong các ô */
     align-items: start; /* Canh trên nội dung nếu có chiều cao khác nhau */
     min-height: calc(120px * 2 + 20px); /* Ít nhất đủ chỗ cho 2 hàng */
+    margin-bottom: 25px;
   }
   
   .item {
@@ -84,8 +122,13 @@ body {
   .item img {
     width: 80px;
     height: 80px;
-    margin-bottom: 20px;
-    object-fit: contain;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    /* object-fit: contain; */
+  }
+  .item .charname {
+    margin-top: 0px;
+    font-size: 12px;
   }
   
   .price {
@@ -108,7 +151,7 @@ body {
     transform: translateX(-50%); /* Đảm bảo vị trí chính giữa */
     display: flex;
     gap: 5px;
-}
+  }
 
 .pagination-btn {
   width: 10px; /* Đường kính của chấm */

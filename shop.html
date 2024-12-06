@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +8,17 @@
   <link rel="stylesheet" href="css/shop.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
 </head>
+
 <body>
   <div class="phone-container">
     <div class="phone">
-      <header id="selected">
+      <header>
+        <div class="user">
+          <i class="fa-solid fa-user" style="color: white;"></i>
+          <span id="username"></span>
+        </div>
+        <span id="score" class="score"></span>
+        <span id="selected"></span>
       </header>
       <main>
         <div class="shop" id="shop">
@@ -19,30 +27,31 @@
       </main>
       <footer>
         <nav class="bottom-nav">
-            <div class="nav-item">
-                <a href="/home.html" style="text-decoration: none; color: white;">
-                    <i class="fa-solid fa-house"></i>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="/rank.html" style="text-decoration: none; color: white;">
-                    <i class="fa-solid fa-chart-column"></i>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="/shop.html" style="text-decoration: none; color: white;">
-                    <i class="fa-solid fa-shop"></i>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="/wallet.html" style="text-decoration: none; color: white;">
-                    <i class="fa-solid fa-wallet"></i>
-                </a>
-            </div>
-          </nav>
+          <div class="nav-item">
+            <a href="/home.html" style="text-decoration: none; color: white;">
+              <i class="fa-solid fa-house"></i>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="/rank.html" style="text-decoration: none; color: white;">
+              <i class="fa-solid fa-chart-column"></i>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="/shop.html" style="text-decoration: none; color: white;">
+              <i class="fa-solid fa-shop"></i>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="/wallet.html" style="text-decoration: none; color: white;">
+              <i class="fa-solid fa-wallet"></i>
+            </a>
+          </div>
+        </nav>
       </footer>
     </div>
   </div>
 </body>
 <script src="js/shop.js"></script>
+
 </html>
