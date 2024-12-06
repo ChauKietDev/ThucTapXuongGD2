@@ -47,7 +47,7 @@ app.post('/transfer', async (req, res) => {
       // Phản hồi về frontend
       res.json({
         success: true,
-        message: 'Chuyển tiền thành công!',
+        message: 'Airdop success',
         transactionSignature: `https://explorer.solana.com/tx/${transactionSignature}?cluster=devnet`
       });
     } catch (error) {
