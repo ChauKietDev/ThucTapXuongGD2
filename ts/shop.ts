@@ -234,7 +234,7 @@ async function getSelectedChar() {
     str += `
         <img src="image/${selectedChar.charBuy.image}" alt="${selectedChar.charBuy.name}" class="header-image">
         <div class="available-coins">
-            <h1>Current character</h1>
+            <h1>Your character</h1>
         </div>`;
     const selectedElement = document.getElementById("selected");
     if (selectedElement) {

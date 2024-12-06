@@ -102,9 +102,8 @@ function startCountdown() {
     const interval = setInterval(() => {
         if (countdownTime <= 0) {
             clearInterval(interval);
-            // updateScore();
+            updateScore();
             setTimeout(() => {
-                updateScore();
                 window.location.href = "home.html";
             }, 1000);
         }

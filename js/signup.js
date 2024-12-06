@@ -16,6 +16,7 @@ function signup(event) {
         let username = "";
         let password = "";
         let confirmPassword = "";
+        let matchPassword = false;
         const checkUser = document.getElementById("checkUsername");
         const checkPass = document.getElementById("checkPassword");
         const checkConfirm = document.getElementById("submitPassword");
@@ -67,10 +68,11 @@ function signup(event) {
         else {
             if (checkConfirm) {
                 checkConfirm.innerHTML = "";
+                matchPassword = true;
             }
         }
         // Kiểm tra dữ liệu đã được xác minh thành công
-        if (username != "" && password != "") {
+        if (username != "" && password != "" && matchPassword) {
             const userSignup = { username, password };
             let res = yield fetch(userApi + "/addUser", {
                 method: "POST",

@@ -9,10 +9,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 let playerApi = "http://localhost:8080/api/v1/playerinfo";
+let counttime = null;
+let timeRemaining = 0;
+let currentTurns;
+let numberOfTurns;
 const playGame = document.getElementById("play");
 function loadUser() {
     return __awaiter(this, void 0, void 0, function* () {
-        var _a;
+        var _a, _b;
         let playerinfo;
         let userLogined;
         userLogined = localStorage.getItem("UserLogined");
@@ -43,72 +47,73 @@ function loadUser() {
                 }
                 (_a = document.getElementById("timeAddTurn")) === null || _a === void 0 ? void 0 : _a.setAttribute("value", playerinfo.timeAddTurn.toString());
             }
-        }
-        requestAnimationFrame(loadUser);
-    });
-}
-function checkTurns(event) {
-    return __awaiter(this, void 0, void 0, function* () {
-        var _a, _b;
-        event.preventDefault();
-        let currentTurns = Number((_a = document.getElementById("currentTurns")) === null || _a === void 0 ? void 0 : _a.textContent);
-        if (currentTurns > 0) {
-            window.location.href = "test.html";
-        }
-        else {
-            const customAlert = document.getElementById('customAlert');
-            const timerElement = document.getElementById('timer');
+            currentTurns = playerinfo.currentTurns;
+            numberOfTurns = playerinfo.numberOfTurns;
             let getTime = (_b = document.getElementById("timeAddTurn")) === null || _b === void 0 ? void 0 : _b.getAttribute("value");
             let timeAdd = new Date(String(getTime));
-            console.log(timeAdd);
             let now = new Date();
-            console.log(timeAdd.getTime(), now.getTime());
-            let timeRemaining = Math.floor((timeAdd.getTime() - now.getTime()) / 1000);
-            let diffInMinutes = Math.floor(timeRemaining / 60);
-            let diffInSeconds = timeRemaining % 60;
-            if (customAlert) {
-                customAlert.style.display = 'block';
+            timeRemaining = Math.floor((timeAdd.getTime() - now.getTime()) / 1000);
+            if (counttime) {
+                clearInterval(counttime);
             }
-            if (timerElement) {
-                timerElement.textContent = `You run out of turn, please wait in: ${diffInMinutes + ":"
-                    + (diffInSeconds >= 10 ? diffInSeconds : "0" + diffInSeconds)}`;
-            }
-            const counttime = setInterval(() => {
-                if (timeRemaining == 0) {
-                    clearInterval(counttime);
-                    setTimeout(() => {
-                        if (customAlert) {
-                            customAlert.style.display = 'none';
-                        }
-                        if (timerElement) {
-                            timerElement.style.display = 'none';
-                        }
-                    });
+            counttime = setInterval(() => {
+                if (currentTurns < numberOfTurns) {
+                    console.log("Running");
+                    timeRemaining--;
+                    if (timeRemaining <= 0) {
+                        currentTurns++;
+                        timeRemaining = 60; // Reset thời gian cho lượt mới.
+                    }
                 }
                 else {
-                    timeRemaining--;
-                    diffInMinutes = Math.floor(timeRemaining / 60);
-                    diffInSeconds = timeRemaining % 60;
-                    if (timerElement) {
-                        timerElement.textContent = `You run out of turn, please wait in: ${diffInMinutes + ":"
-                            + (diffInSeconds >= 10 ? diffInSeconds : "0" + diffInSeconds)}`;
-                    }
-                    // alert("You run out of turn, please wait to " + (diffInHour > 0 ? diffInHour + ":" : "") +
-                    //     );
+                    clearInterval(counttime);
+                    counttime = null;
+                    console.log("Stop");
                 }
             }, 1000);
-            // alert("You run out of turn, please wait to " + timeAdd);
         }
     });
 }
-function closePopup() {
-    const customAlert = document.getElementById('customAlert');
-    const timerElement = document.getElementById('timer');
-    if (customAlert) {
-        customAlert.style.display = 'none';
+function updateUI() {
+    const count = document.getElementById("counttime");
+    if (count) {
+        count.innerHTML = "Next attempt in: ";
+        let diffInMinutes = Math.floor(timeRemaining / 60);
+        let diffInSeconds = timeRemaining % 60;
+        count.innerHTML += `${diffInMinutes}:${diffInSeconds >= 10 ? diffInSeconds : "0" + diffInSeconds}`;
+        console.log("viewtime", `${diffInMinutes}:${diffInSeconds >= 10 ? diffInSeconds : "0" + diffInSeconds}`);
+    }
+    const playbutton = document.getElementById("play-button");
+    if (currentTurns > 0) {
+        if (playbutton) {
+            playbutton.removeAttribute("disabled");
+            playbutton.style.backgroundColor = "#ffc107";
+        }
+    }
+    else {
+        if (playGame) {
+            playGame.removeAttribute("href");
+        }
+        if (playbutton) {
+            playbutton.setAttribute("disabled", "true");
+            playbutton.style.backgroundColor = "grey";
+        }
+    }
+    requestAnimationFrame(updateUI);
+}
+function checkTurns(event) {
+    var _a;
+    event.preventDefault();
+    let currentTurns = Number((_a = document.getElementById("currentTurns")) === null || _a === void 0 ? void 0 : _a.textContent);
+    if (currentTurns > 0) {
+        window.location.href = "test.html";
     }
 }
-loadUser();
+function start() {
+    loadUser();
+    updateUI();
+}
+start();
 if (playGame) {
     playGame.addEventListener("click", checkTurns);
 }
