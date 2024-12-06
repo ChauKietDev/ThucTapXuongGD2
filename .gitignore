@@ -1,0 +1,35 @@
+# Node.js modules
+node_modules/
+
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Tệp cấu hình của môi trường phát triển
+.env
+
+# Tệp cài đặt của IDE
+.vscode/
+.idea/
+
+# Tệp hệ thống của OS (Windows, macOS, Linux)
+.DS_Store
+Thumbs.db
+
+# Tệp biên dịch TypeScript
+*.tsbuildinfo
+
+# Tệp biên dịch hoặc các tệp tạm thời khác
+dist/
+build/
+
+# Các tệp phụ trợ khác (Chỉ khi bạn không muốn push chúng lên Git)
+*.pem
+*.key
+*.crt
+test-ledger/
+test-ledger/validator-1732860977865.log
+test-ledger/rocksdb/*.log
+test-ledger/rocksdb/*.sst

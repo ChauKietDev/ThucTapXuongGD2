@@ -1,5 +1,10 @@
 {
   "compilerOptions": {
+    "module": "es2022",  // Hoặc "esnext", "system", "node16", "nodenext", ...
+    "target": "es2017",   // Hoặc cao hơn, ví dụ "es2020" hoặc "esnext"
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+
     /* Visit https://aka.ms/tsconfig to read more about this file */
 
     /* Projects */

@@ -124,7 +124,7 @@
       color: #fff;
     }
 
-    .exchange-button {
+    #convert-button {
       background-color: #ffc107;
       color: #000;
       border: none;
@@ -136,7 +136,7 @@
       margin-top: 10px;
     }
 
-    .exchange-button:hover {
+    #convert-button:hover {
       background-color: #ffa000;
     }
 
@@ -161,7 +161,8 @@
     .nav-item:hover {
       color: #ffc107;
     }
-    i{
+
+    i {
       font-size: 20px;
     }
   </style>
@@ -178,43 +179,142 @@
         <div class="points-section">
           <label for="points" class="points-label">Điểm</label>
           <div class="points-input-wrapper">
-            <input type="text" id="points" class="points-input" placeholder="0">
+            <input type="number" id="amount" class="points-input" placeholder="0">
             <span class="currency">$</span>
           </div>
           <div class="diamond-section">
             <img src="./image/diamond.png" alt="Diamond Icon" class="diamond-icon">
             <span class="diamond-points">Diamonds points: <b>100,253,651 DP</b></span>
           </div>
-          <button class="exchange-button">Sẵn sàng để đổi token</button>
+          <button id="convert-button">Sẵn sàng để đổi token</button>
         </div>
       </main>
       <footer>
         <nav class="bottom-nav">
           <div class="nav-item">
-            <a href="/home.html" style="text-decoration: none; color: white;">
-                <i class="fa-solid fa-house"></i>
-            </a>
-        </div>
+              <a href="/home.html" style="text-decoration: none; color: white;">
+                  <i class="fa-solid fa-house"></i>
+              </a>
+          </div>
           <div class="nav-item">
               <a href="/rank.html" style="text-decoration: none; color: white;">
                   <i class="fa-solid fa-chart-column"></i>
               </a>
           </div>
           <div class="nav-item">
-            <a href="/shop.html" style="text-decoration: none; color: white;">
-                <i class="fa-solid fa-shop"></i>
-            </a>
-        </div>
+              <a href="/shop.html" style="text-decoration: none; color: white;">
+                  <i class="fa-solid fa-shop"></i>
+              </a>
+          </div>
           <div class="nav-item">
               <a href="/wallet.html" style="text-decoration: none; color: white;">
                   <i class="fa-solid fa-wallet"></i>
               </a>
           </div>
       </nav>
+      </footer>
+      </nav>
     </footer>
     </div>
   </div>
-  <script src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <script>
+    const convertButton = document.getElementById('convert-button');
+    const connectButton = document.querySelector('.connect-wallet');  // Lấy nút kết nối ví
+
+    // Phantom Wallet Integration
+    const connectWallet = async () => {
+      if (window.solana && window.solana.isPhantom) {
+        try {
+          const response = await window.solana.connect();
+          console.log('Connected wallet:', response.publicKey.toString());
+          return response.publicKey.toString();  // Trả về public key của ví
+        } catch (err) {
+          console.error('Wallet connection failed:', err);
+          alert('Kết nối ví thất bại!');
+        }
+      } else {
+        alert('Vui lòng cài đặt Phantom Wallet!');
+      }
+    };
+
+    // Cập nhật nội dung nút khi kết nối ví
+    const updateConnectButton = (publicKey) => {
+      if (publicKey) {
+        connectButton.textContent = `${publicKey.slice(0, 6)}...${publicKey.slice(-4)}`;  // Hiển thị 6 ký tự đầu và 4 ký tự cuối của địa chỉ ví
+        window.publicKey = publicKey;  // Giả sử publicKey đã được kết nối
+      } else {
+        connectButton.textContent = 'Kết nối ví';  // Nếu chưa kết nối, hiển thị "Kết nối ví"
+      }
+    };
+
+    // Xử lý sự kiện khi nhấn nút kết nối ví
+    connectButton.addEventListener('click', async () => {
+      const publicKey = await connectWallet();
+      updateConnectButton(publicKey);  // Cập nhật nội dung nút sau khi kết nối ví
+    });
+
+    //xử lí sự kiện chuyển đổi token
+    convertButton.addEventListener('click', async function () {
+      const response = await window.solana.connect();
+      const receiver = response.publicKey.toString()
+      console.log("địa chỉ ví người nhận: "+ receiver)
+      const amount = document.getElementById('amount').value;
+      let amount_token = amount * 0.0001
+      console.log("Số lượng xu: " + amount)
+      console.log("Số lượng token: " + amount_token)
+      
+      // Kiểm tra xem các trường đã được nhập đầy đủ chưa
+      if (!receiver || !amount) {
+        alert('Vui lòng nhập địa chỉ ví người nhận và số lượng SOL.');
+        return;
+      }
+
+      // Kiểm tra định dạng địa chỉ ví có hợp lệ không (ví dụ chỉ kiểm tra độ dài)
+      if (receiver.length !== 44) {
+        alert('Địa chỉ ví không hợp lệ.');
+        return;
+      }
+
+      try {
+        // Gửi yêu cầu chuyển tiền tới API backend
+        const response = await axios.post('http://localhost:3000/transfer', {
+          receiver: receiver,
+          amount: amount_token
+        });
+
+        if (response.data.success) {
+          alert('Chuyển tiền thành công!');
+          console.log('Chữ ký giao dịch: ', response.data.transactionSignature);
+          // Chuyển hướng đến trang Solana Explorer
+          window.open(response.data.transactionSignature, '_blank');
+        } else {
+          alert('Đã xảy ra lỗi trong quá trình giao dịch.');
+        }
+      } catch (error) {
+        console.error('Lỗi trong quá trình giao dịch: ', error);
+        alert('Lỗi trong quá trình giao dịch, vui lòng thử lại.');
+      }
+    });
+
+    // Xử lý nhấn nút chuyển đổi
+    convertButton.addEventListener('click', async () => {
+      const pointsInput = document.getElementById('points');
+      const points = parseFloat(pointsInput.value);
+
+      if (!points || points <= 0) {
+        alert('Vui lòng nhập số điểm hợp lệ.');
+        return;
+      }
+
+      if (!publicKey) {
+        alert('Vui lòng kết nối ví trước.');
+        return;
+      }
+    });
+  </script>
 </body>
 
 </html>

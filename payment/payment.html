@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solana Payment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input {
+            padding: 5px;
+            width: 200px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px 0;
+            border: none;
+            cursor: pointer;
+        }
+
+        button.generate {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        button.check {
+            background-color: #28A745;
+            color: white;
+        }
+
+        img {
+            margin-top: 20px;
+            max-width: 200px;
+        }
+
+        .result {
+            margin-top: 20px;
+        }
+
+        .result.success {
+            color: green;
+        }
+
+        .result.error {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Thanh toán bằng Solana</h1>
+    <label>
+        SOL:
+        <input type="number" id="amount" placeholder="Nhập số tiền">
+    </label>
+    <label>
+        Mã đơn hàng (Order ID):
+        <input type="text" id="orderId" placeholder="Nhập mã đơn hàng">
+    </label>
+    <button class="generate" onclick="generateQRCode()">Tạo QR Code</button>
+
+    <div id="qrCodeContainer"></div>
+    <div id="transactionResult"></div>
+
+    <script>
+        const API_BASE_URL = "http://localhost:3000";
+
+        // Hàm tạo mã QR
+        function generateQRCode() {
+            const amount = document.getElementById("amount").value;
+            const orderId = document.getElementById("orderId").value;
+
+            if (!amount || isNaN(amount) || !orderId) {
+                alert("Vui lòng nhập số tiền hợp lệ và mã đơn hàng.");
+                return;
+            }
+
+            // Gửi yêu cầu tạo mã QR
+            fetch(`${API_BASE_URL}/generate-qr?amount=${amount}&orderId=${orderId}`)
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error("Không thể tạo mã QR.");
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    if (data.success) {
+                        const qrCodeContainer = document.getElementById("qrCodeContainer");
+                        qrCodeContainer.innerHTML = `
+          <h3>Mã QR của bạn:</h3>
+          <img src="${data.qrCodeData}" alt="QR Code">
+        `
+                        checkTransactionContinuously(amount, orderId)
+                            ;
+                    } else {
+                        alert("Có lỗi xảy ra: " + data.message);
+                    }
+                })
+                .catch((error) => {
+                    alert("Lỗi: " + error.message);
+                });
+        }
+
+        let isTransactionChecked = false; // Biến trạng thái ban đầu là false
+        let isFetching = false; // Kiểm soát việc gọi fetch để tránh chồng lặp
+
+        function checkTransactionContinuously(amount, orderId) {
+            const transactionResult = document.getElementById("transactionResult");
+
+            // Hàm kiểm tra giao dịch
+            const checkTransaction = () => {
+                if (isFetching) return; // Nếu đang fetch thì bỏ qua
+                isFetching = true; // Đặt trạng thái đang fetch
+
+                fetch(`${API_BASE_URL}/check-transaction?amount=${amount}&orderId=${orderId}`)
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error("Không thể kiểm tra giao dịch.");
+                        }
+                        return response.json();
+                    })
+                    .then((data) => {
+                        if (data.success) {
+                            alert('Thanh toán thành công!');
+                            console.log(data);
+                            isTransactionChecked = true; // Cập nhật trạng thái
+                            clearInterval(intervalId); // Dừng vòng lặp ngay lập tức
+                        } else {
+                            console.log('Lỗi: ' + data.message);
+                        }
+                    })
+                    .catch((error) => {
+                        console.log("Lỗi: " + error.message);
+                    })
+                    .finally(() => {
+                        isFetching = false; // Đặt lại trạng thái để tiếp tục gọi fetch
+                    });
+            };
+
+            // Lặp kiểm tra giao dịch mỗi 1 giây
+            const intervalId = setInterval(() => {
+                if (!isTransactionChecked) {
+                    checkTransaction(); // Gọi hàm kiểm tra giao dịch
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+
+</html>
