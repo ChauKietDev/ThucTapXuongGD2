@@ -45,7 +45,18 @@ async function curSelectedChar() {
     });
     characterImage.src = "./image/" + selectedChar?.charBuy.image; // Đường dẫn ảnh nhân vật
 }
+function viewPower() {
+    const powerElement = document.getElementById("power");
+    if (powerElement) {
+        let power = localStorage.getItem("power");
+        if (power && power !== "null") {
+            powerElement.innerHTML = "Ability: " + power;
+        }
+    }
+}
+
 curSelectedChar();
+viewPower();
 updateTurn();
 
 characterImage.onload = () => {
@@ -54,8 +65,13 @@ characterImage.onload = () => {
 // Tạo ngẫu nhiên nhiều vật phẩm
 // Tải ảnh vật phẩm
 const itemImage = new Image();
-itemImage.src = "./image/diamond.png"; // Đường dẫn đến ảnh vật phẩm
-
+let otherDiamond = localStorage.getItem("otherDiamond");
+if (otherDiamond != null) {
+    itemImage.src = `./image/${otherDiamond}`; // Đường dẫn đến ảnh vật phẩm
+}
+else {
+    itemImage.src = './image/diamond.png'; // Đường dẫn đến ảnh vật phẩm
+}
 // Đảm bảo ảnh được tải xong trước khi sử dụng
 itemImage.onload = () => {
     // Gọi hàm vẽ sau khi ảnh đã tải
@@ -148,7 +164,14 @@ function generateItems(count: number): Item[] {
 
         const image = new Image();
         if (type === "positive") {
-            image.src = "./image/diamond.png";
+            let otherDiamond = localStorage.getItem("otherDiamond");
+            console.log(otherDiamond)
+            if (otherDiamond && otherDiamond !== "null") {
+                image.src = `./image/${otherDiamond}`; // Đường dẫn đến ảnh vật phẩm
+            }
+            else {
+                image.src = "./image/diamond.png"; // Đường dẫn đến ảnh vật phẩm
+            }
         } else {
             image.src = "./image/daa.png";
         }
@@ -230,9 +253,23 @@ function updateHook(): void {
                 hook.attachedItem = null; // Giải phóng móc câu
                 hook.isFiring = false; // Ngừng trạng thái thả móc
 
+                // thiết đặt khả năng của nhân vật
+                let power = localStorage.getItem("power");
+                
                 // Cập nhật điểm khi vật phẩm chạm vào nhân vật
                 if (item.type === "positive") {
-                    score += item.value; // Cộng điểm
+                    if (power && power !== "null") {
+                        if (power.includes("x")) {
+                            let extra: number = Number(power.substring(1)); // Bỏ qua dấu +, x
+                            console.log(item.value, item.value * extra)
+                            score += item.value * extra; // Cộng điểm
+                        }
+                        else if (power.includes("+")) {
+                            let extra: number = Number(power.substring(1)); // Bỏ qua dấu +, x
+                            console.log(item.value, item.value + extra)
+                            score += item.value + extra; // Cộng điểm
+                        }
+                    }
                 } else {
                     score -= item.value; // Trừ điểm
                 }

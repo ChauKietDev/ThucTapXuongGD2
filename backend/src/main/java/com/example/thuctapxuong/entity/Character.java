@@ -20,6 +20,8 @@ public class Character {
     private String name;
     private Double coins;
     private String image;
+    private String power;
+    private String otherDiamond;
 
     @JsonIgnore
     @OneToMany(mappedBy = "charBuy")

@@ -57,10 +57,12 @@ public class PlayerInfoRestController {
         if (playerInfoDao.findById(id) != null) {
             PlayerInfo playerInfo = playerInfoDao.findById(id).get();
             if (isPlayed) {
-                currentTurns = playerInfo.getCurrentTurns();
-                playerInfo.setCurrentTurns(currentTurns - 1);
-                playerInfo.setTimeUsedTurn(LocalDateTime.now());
-                playerInfo.setTimeAddTurn(playerInfo.getTimeUsedTurn().plusHours(1));
+                if (playerInfo.getCurrentTurns() > 0) {
+                    currentTurns = playerInfo.getCurrentTurns();
+                    playerInfo.setCurrentTurns(currentTurns - 1);
+                    playerInfo.setTimeUsedTurn(LocalDateTime.now());
+                    playerInfo.setTimeAddTurn(playerInfo.getTimeUsedTurn().plusHours(1));
+                }
             }
             else
                 if (playerInfo.getCurrentTurns() < playerInfo.getNumberOfTurns()) {

@@ -58,6 +58,7 @@ function loadUser() {
             }
             counttime = setInterval(() => {
                 if (currentTurns < numberOfTurns) {
+                    console.log("Running");
                     timeRemaining--;
                     if (timeRemaining <= 0) {
                         currentTurns++;
@@ -67,6 +68,7 @@ function loadUser() {
                 else {
                     clearInterval(counttime);
                     counttime = null;
+                    console.log("Stop");
                 }
             }, 1000);
         }
@@ -79,6 +81,7 @@ function updateUI() {
         let diffInMinutes = Math.floor(timeRemaining / 60);
         let diffInSeconds = timeRemaining % 60;
         count.innerHTML += `${diffInMinutes}:${diffInSeconds >= 10 ? diffInSeconds : "0" + diffInSeconds}`;
+        console.log("viewtime", `${diffInMinutes}:${diffInSeconds >= 10 ? diffInSeconds : "0" + diffInSeconds}`);
     }
     const playbutton = document.getElementById("play-button");
     if (currentTurns > 0) {

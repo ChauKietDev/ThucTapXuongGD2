@@ -164,8 +164,6 @@ function selectOrBuy(id, currentText, event) {
                 boughtCharElement.setAttribute("disabled", "true");
                 if (resultBoughtChar) {
                     changeColor(resultBoughtChar.charBuy);
-                    localStorage.setItem("otherDiamond", resultBoughtChar.charBuy.otherDiamond != "" ? resultBoughtChar.charBuy.otherDiamond : "");
-                    localStorage.setItem("power", resultBoughtChar.charBuy.power);
                     console.log("changed color selected");
                 }
                 viewSelectedChar();

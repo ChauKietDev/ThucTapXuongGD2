@@ -2,7 +2,9 @@ interface Character {
     id: number,
     name: string,
     coins: number,
-    image: string
+    image: string,
+    power: string,
+    otherDiamond: string
 }
 interface BoughtChar {
     id: number,
@@ -153,6 +155,8 @@ async function selectOrBuy(id: number, currentText: string | null, event: Event)
             boughtCharElement.setAttribute("disabled", "true");
             if (resultBoughtChar) {
                 changeColor(resultBoughtChar.charBuy);
+                localStorage.setItem("otherDiamond", resultBoughtChar.charBuy.otherDiamond != "" ? resultBoughtChar.charBuy.otherDiamond : "");
+                localStorage.setItem("power", resultBoughtChar.charBuy.power);
                 console.log("changed color selected");
             }
             viewSelectedChar();
