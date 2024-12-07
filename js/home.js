@@ -11,8 +11,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 let playerApi = "http://localhost:8080/api/v1/playerinfo";
 let counttime = null;
 let timeRemaining = 0;
-let currentTurns;
-let numberOfTurns;
+let currentTurns = 0;
+let numberOfTurns = 0;
 const playGame = document.getElementById("play");
 function loadUser() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -74,11 +74,24 @@ function loadUser() {
 }
 function updateUI() {
     const count = document.getElementById("counttime");
+    const currentTurnsElement = document.getElementById("currentTurns");
+    const numberTurnsElement = document.getElementById("numberTurns");
+    if (currentTurnsElement) {
+        currentTurnsElement.innerHTML = currentTurns.toString();
+    }
+    if (numberTurnsElement) {
+        numberTurnsElement.innerHTML = numberOfTurns.toString();
+    }
     if (count) {
-        count.innerHTML = "Next attempt in: ";
-        let diffInMinutes = Math.floor(timeRemaining / 60);
-        let diffInSeconds = timeRemaining % 60;
-        count.innerHTML += `${diffInMinutes}:${diffInSeconds >= 10 ? diffInSeconds : "0" + diffInSeconds}`;
+        if (currentTurns < numberOfTurns) {
+            count.innerHTML = "Next attempt in: ";
+            let diffInMinutes = Math.floor(timeRemaining / 60);
+            let diffInSeconds = timeRemaining % 60;
+            count.innerHTML += `${diffInMinutes}:${diffInSeconds >= 10 ? diffInSeconds : "0" + diffInSeconds}`;
+        }
+        else {
+            count.innerHTML = "";
+        }
     }
     const playbutton = document.getElementById("play-button");
     if (currentTurns > 0) {

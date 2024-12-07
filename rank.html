@@ -149,12 +149,6 @@
 </head>
 
 <body>
-    <div id="customAlert">
-        <div class="alert-header">
-            <button type="submit" onclick="closePop()">X</button>
-        </div>
-        <p id="timer" style="color: black;"></p>
-    </div>
     <div class="phone-container">
         <div class="phone">
             <header>
@@ -168,11 +162,13 @@
                 </div>
             </main>
             <div class="game-section">
-                <button class="play-button">
+                <button class="play-button" id="play-button">
                     <a href="" id="play" style="text-decoration: none; color: black;">
                         Play Game (Your Attempt: 
                         <span id="currentTurns"></span>/<span id="numberTurns"></span>)
-                    </a>                
+                    </a>
+                    <br>
+                    <span id="counttime"></span>                
                 </button>            
             </div>
             <footer>
@@ -201,6 +197,7 @@
             </footer>
         </div>
     </div>
-    <script src="js/rank.js"></script>
+    <input type="hidden" id="timeAddTurn">
 </body>
+<script src="js/rank.js"></script>
 </html>

@@ -242,6 +242,9 @@ function updateHook() {
                             score += item.value + extra; // Cộng điểm
                         }
                     }
+                    else {
+                        score += item.value; // Cộng điểm
+                    }
                 }
                 else {
                     score -= item.value; // Trừ điểm

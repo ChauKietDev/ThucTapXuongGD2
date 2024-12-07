@@ -4,6 +4,10 @@ interface Achievement {
 }
 let rankApi = "http://localhost:8080/api/v1/rank";
 let playerAPI = "http://localhost:8080/api/v1/playerinfo";
+let countTime: number | null = null;
+let timeRemain: number = 0;
+let currentTurn: number = 0;
+let numberOfTurn: number = 0;
 const play = document.getElementById("play") as HTMLButtonElement;
 
 async function playerRank() {
@@ -59,62 +63,110 @@ async function topRank() {
     }
     return str;
 }
+async function loaduser() {
+    let playerinfo: PlayerInfo;
+    let userLogined: string | null; 
+    userLogined = localStorage.getItem("UserLogined");
+    const res = await fetch(playerAPI + `/getInfo/username-${userLogined}`);
+    if (res.ok) {
+        playerinfo = await res.json();
+        const resUpdate = await fetch(playerAPI + `/updateTurns/${playerinfo.id}-isPlayed=${false}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: "Plain text data"
+        });
+
+        if (resUpdate.ok) {
+            playerinfo = await resUpdate.json();
+            localStorage.setItem("playerInfoId", playerinfo.id.toString());
+
+            const currentTurnsElement = document.getElementById("currentTurns");
+            if (currentTurnsElement) {
+                currentTurnsElement.innerHTML = playerinfo.currentTurns.toString();
+            }
+
+            const numberTurnsElement = document.getElementById("numberTurns");
+            if (numberTurnsElement) {
+                numberTurnsElement.innerHTML = playerinfo.numberOfTurns.toString();
+            }
+            document.getElementById("timeAddTurn")?.setAttribute("value", playerinfo.timeAddTurn.toString());
+        }
+        currentTurn = playerinfo.currentTurns;
+        numberOfTurn = playerinfo.numberOfTurns;
+        
+        let getTime = document.getElementById("timeAddTurn")?.getAttribute("value");
+        let timeAdd: Date = new Date(String(getTime));
+        let now: Date = new Date();
+        timeRemain = Math.floor((timeAdd.getTime() - now.getTime()) / 1000);
+        
+        if (countTime) {
+            clearInterval(countTime);
+        }
+        countTime = setInterval(() => {
+            if (currentTurn < numberOfTurn) {
+                timeRemain--;
+                if (timeRemain <= 0) {
+                    currentTurn++;
+                    timeRemain = 60; // Reset thời gian cho lượt mới.
+                }
+            } else {
+                clearInterval(countTime!);
+                countTime = null;
+            }
+        }, 1000);    
+    }
+}
+function updateui() {
+    const count = document.getElementById("counttime");
+    const currentTurnsElement = document.getElementById("currentTurns");
+    const numberTurnsElement = document.getElementById("numberTurns");
+    if (currentTurnsElement) {
+        currentTurnsElement.innerHTML = currentTurn.toString();
+    }
+    if (numberTurnsElement) {
+        numberTurnsElement.innerHTML = numberOfTurn.toString();
+    }
+    if (count) {
+        if (currentTurn < numberOfTurn) {
+            count.innerHTML = "Next attempt in: ";
+            let diffInMinutes = Math.floor(timeRemain / 60);
+            let diffInSeconds = timeRemain % 60;
+    
+            count.innerHTML += `${diffInMinutes}:${diffInSeconds >= 10 ? diffInSeconds : "0" + diffInSeconds}`;
+        }
+        else {
+            count.innerHTML = "";
+        }
+    }
+
+    const playbutton = document.getElementById("play-button");
+    if (currentTurn > 0) {
+        if (playbutton) {
+            playbutton.removeAttribute("disabled");
+            playbutton.style.backgroundColor = "#ffc107";
+        }
+    }
+    else {
+        if (play) {
+            play.removeAttribute("href");
+        }
+        if (playbutton) {
+            playbutton.setAttribute("disabled", "true");
+            playbutton.style.backgroundColor = "grey";
+        }
+        
+    }
+
+    requestAnimationFrame(updateui);
+}
 async function checkTurn(event: Event) {
     event.preventDefault();
 
     let currentTurns: number = Number(document.getElementById("currentTurns")?.textContent);
     if (currentTurns > 0) {
         window.location.href = "test.html";
-    }
-    else {
-        const customAlert = document.getElementById('customAlert');
-        const timerElement = document.getElementById('timer');
-
-        let getTime = document.getElementById("timeAddTurn")?.getAttribute("value");
-        let timeAdd: Date = new Date(String(getTime));
-        console.log(timeAdd)
-        let now: Date = new Date();
-
-        console.log(timeAdd.getTime(), now.getTime())
-        let timeRemaining = Math.floor((timeAdd.getTime() - now.getTime()) / 1000);
-        let diffInMinutes = Math.floor(timeRemaining / 60);
-        let diffInSeconds = timeRemaining % 60;
-
-        if (customAlert) {
-            customAlert.style.display = 'block';
-        }
-        if (timerElement) {
-            timerElement.textContent = `You run out of turn, please wait in: ${diffInMinutes + ":" 
-                                        + (diffInSeconds >= 10 ? diffInSeconds : "0" + diffInSeconds)}`;
-        }
-
-        const counttime = setInterval(() => {    
-            if (timeRemaining == 0) {
-                clearInterval(counttime);
-                setTimeout(() => {
-                    if (customAlert) {
-                        customAlert.style.display = 'none';
-                    }
-                    if (timerElement) {
-                        timerElement.style.display = 'none';
-                    }
-                });
-            }
-            else {
-                timeRemaining--;
-                diffInMinutes = Math.floor(timeRemaining / 60);
-                diffInSeconds = timeRemaining % 60;
-                if (timerElement) {
-                    timerElement.textContent = `You run out of turn, please wait in: ${diffInMinutes + ":" 
-                                                + (diffInSeconds >= 10 ? diffInSeconds : "0" + diffInSeconds)}`;
-                }
-                
-                // alert("You run out of turn, please wait to " + (diffInHour > 0 ? diffInHour + ":" : "") +
-                //     );
-            }
-        }, 1000)
-        
-        // alert("You run out of turn, please wait to " + timeAdd);
     }
 }
 async function loadTurn() {
@@ -146,24 +198,20 @@ async function loadTurn() {
     }
     
 }
-function closePop() {
-    const customAlert = document.getElementById('customAlert');
-    const timerElement = document.getElementById('timer');
-
-    if (customAlert) {
-        customAlert.style.display = 'none';
-    }
-}
 async function loadRank() {
     const rankListElement = document.getElementById("ranklist");
     if (rankListElement) {
         rankListElement.innerHTML = await playerRank() + await topRank();
     }
-    loadTurn();
     requestAnimationFrame(loadRank);
+}
+function run() {
+    loaduser();
+    updateui();
 }
 
 loadRank();
+run();
 if (play) {
     play.addEventListener("click", checkTurn);
 }

@@ -10,6 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 let rankApi = "http://localhost:8080/api/v1/rank";
 let playerAPI = "http://localhost:8080/api/v1/playerinfo";
+let countTime = null;
+let timeRemain = 0;
+let currentTurn = 0;
+let numberOfTurn = 0;
 const play = document.getElementById("play");
 function playerRank() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -68,57 +72,106 @@ function topRank() {
         return str;
     });
 }
-function checkTurn(event) {
+function loaduser() {
     return __awaiter(this, void 0, void 0, function* () {
         var _a, _b;
+        let playerinfo;
+        let userLogined;
+        userLogined = localStorage.getItem("UserLogined");
+        const res = yield fetch(playerAPI + `/getInfo/username-${userLogined}`);
+        if (res.ok) {
+            playerinfo = yield res.json();
+            const resUpdate = yield fetch(playerAPI + `/updateTurns/${playerinfo.id}-isPlayed=${false}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: "Plain text data"
+            });
+            if (resUpdate.ok) {
+                playerinfo = yield resUpdate.json();
+                localStorage.setItem("playerInfoId", playerinfo.id.toString());
+                const currentTurnsElement = document.getElementById("currentTurns");
+                if (currentTurnsElement) {
+                    currentTurnsElement.innerHTML = playerinfo.currentTurns.toString();
+                }
+                const numberTurnsElement = document.getElementById("numberTurns");
+                if (numberTurnsElement) {
+                    numberTurnsElement.innerHTML = playerinfo.numberOfTurns.toString();
+                }
+                (_a = document.getElementById("timeAddTurn")) === null || _a === void 0 ? void 0 : _a.setAttribute("value", playerinfo.timeAddTurn.toString());
+            }
+            currentTurn = playerinfo.currentTurns;
+            numberOfTurn = playerinfo.numberOfTurns;
+            let getTime = (_b = document.getElementById("timeAddTurn")) === null || _b === void 0 ? void 0 : _b.getAttribute("value");
+            let timeAdd = new Date(String(getTime));
+            let now = new Date();
+            timeRemain = Math.floor((timeAdd.getTime() - now.getTime()) / 1000);
+            if (countTime) {
+                clearInterval(countTime);
+            }
+            countTime = setInterval(() => {
+                if (currentTurn < numberOfTurn) {
+                    timeRemain--;
+                    if (timeRemain <= 0) {
+                        currentTurn++;
+                        timeRemain = 60; // Reset thời gian cho lượt mới.
+                    }
+                }
+                else {
+                    clearInterval(countTime);
+                    countTime = null;
+                }
+            }, 1000);
+        }
+    });
+}
+function updateui() {
+    const count = document.getElementById("counttime");
+    const currentTurnsElement = document.getElementById("currentTurns");
+    const numberTurnsElement = document.getElementById("numberTurns");
+    if (currentTurnsElement) {
+        currentTurnsElement.innerHTML = currentTurn.toString();
+    }
+    if (numberTurnsElement) {
+        numberTurnsElement.innerHTML = numberOfTurn.toString();
+    }
+    if (count) {
+        if (currentTurn < numberOfTurn) {
+            count.innerHTML = "Next attempt in: ";
+            let diffInMinutes = Math.floor(timeRemain / 60);
+            let diffInSeconds = timeRemain % 60;
+            count.innerHTML += `${diffInMinutes}:${diffInSeconds >= 10 ? diffInSeconds : "0" + diffInSeconds}`;
+        }
+        else {
+            count.innerHTML = "";
+        }
+    }
+    const playbutton = document.getElementById("play-button");
+    if (currentTurn > 0) {
+        if (playbutton) {
+            playbutton.removeAttribute("disabled");
+            playbutton.style.backgroundColor = "#ffc107";
+        }
+    }
+    else {
+        if (play) {
+            play.removeAttribute("href");
+        }
+        if (playbutton) {
+            playbutton.setAttribute("disabled", "true");
+            playbutton.style.backgroundColor = "grey";
+        }
+    }
+    requestAnimationFrame(updateui);
+}
+function checkTurn(event) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var _a;
         event.preventDefault();
         let currentTurns = Number((_a = document.getElementById("currentTurns")) === null || _a === void 0 ? void 0 : _a.textContent);
         if (currentTurns > 0) {
             window.location.href = "test.html";
-        }
-        else {
-            const customAlert = document.getElementById('customAlert');
-            const timerElement = document.getElementById('timer');
-            let getTime = (_b = document.getElementById("timeAddTurn")) === null || _b === void 0 ? void 0 : _b.getAttribute("value");
-            let timeAdd = new Date(String(getTime));
-            console.log(timeAdd);
-            let now = new Date();
-            console.log(timeAdd.getTime(), now.getTime());
-            let timeRemaining = Math.floor((timeAdd.getTime() - now.getTime()) / 1000);
-            let diffInMinutes = Math.floor(timeRemaining / 60);
-            let diffInSeconds = timeRemaining % 60;
-            if (customAlert) {
-                customAlert.style.display = 'block';
-            }
-            if (timerElement) {
-                timerElement.textContent = `You run out of turn, please wait in: ${diffInMinutes + ":"
-                    + (diffInSeconds >= 10 ? diffInSeconds : "0" + diffInSeconds)}`;
-            }
-            const counttime = setInterval(() => {
-                if (timeRemaining == 0) {
-                    clearInterval(counttime);
-                    setTimeout(() => {
-                        if (customAlert) {
-                            customAlert.style.display = 'none';
-                        }
-                        if (timerElement) {
-                            timerElement.style.display = 'none';
-                        }
-                    });
-                }
-                else {
-                    timeRemaining--;
-                    diffInMinutes = Math.floor(timeRemaining / 60);
-                    diffInSeconds = timeRemaining % 60;
-                    if (timerElement) {
-                        timerElement.textContent = `You run out of turn, please wait in: ${diffInMinutes + ":"
-                            + (diffInSeconds >= 10 ? diffInSeconds : "0" + diffInSeconds)}`;
-                    }
-                    // alert("You run out of turn, please wait to " + (diffInHour > 0 ? diffInHour + ":" : "") +
-                    //     );
-                }
-            }, 1000);
-            // alert("You run out of turn, please wait to " + timeAdd);
         }
     });
 }
@@ -149,24 +202,21 @@ function loadTurn() {
         }
     });
 }
-function closePop() {
-    const customAlert = document.getElementById('customAlert');
-    const timerElement = document.getElementById('timer');
-    if (customAlert) {
-        customAlert.style.display = 'none';
-    }
-}
 function loadRank() {
     return __awaiter(this, void 0, void 0, function* () {
         const rankListElement = document.getElementById("ranklist");
         if (rankListElement) {
             rankListElement.innerHTML = (yield playerRank()) + (yield topRank());
         }
-        loadTurn();
         requestAnimationFrame(loadRank);
     });
 }
+function run() {
+    loaduser();
+    updateui();
+}
 loadRank();
+run();
 if (play) {
     play.addEventListener("click", checkTurn);
 }
