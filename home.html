@@ -48,17 +48,64 @@
             text-align: center;
         }
 
-        .user{
+        .user {
             background: linear-gradient(#539cd2, #50cdde);
             border-top-left-radius: 20px;
             border-bottom-left-radius: 20px;
             padding: 5px 15px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            color: #fdde57; /* Gold color for text */
+            color: #fdde57;
             font-size: 19px;
             font-weight: bold;
             width: fit-content;
             margin-left: auto;
+            position: relative; /* Để đảm bảo menu con nằm trong vị trí của div */
+            cursor: pointer;
+        }
+
+        /* Menu con ẩn mặc định */
+        .user-menu {
+            display: none;
+            position: absolute; /* Định vị menu con */
+            top: 100%; /* Hiển thị ngay bên dưới div.user */
+            right: 0; /* Canh phải với div.user */
+            background: #ffffff; /* Màu nền menu */
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            padding: 10px 0;
+            z-index: 10; /* Đảm bảo menu hiển thị trên các thành phần khác */
+        }
+
+        /* Hiển thị menu khi hover */
+        .user:hover .user-menu {
+            display: block;
+        }
+
+        /* Menu các mục con */
+        .user-menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .user-menu li {
+            height: 20px;
+            padding: 0px 15px;
+        }
+
+        .user-menu li a {
+            text-decoration: none;
+            color: #539cd2; /* Màu chữ của liên kết */
+            display: block;
+            font-size: 19px;
+            font-weight: bold;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .user-menu li a:hover {
+            background: #50cdde;
+            color: white;
         }
         
         .logo {
@@ -74,17 +121,22 @@
 
         /* Main content styles */
         .game-section {
-            text-align: center;
-            margin-top: 20px;
+            display: flex; /* Dùng flexbox */
+            flex-direction: column; /* Sắp xếp các phần tử theo cột (trên xuống dưới) */
+            justify-content: center; /* Căn giữa theo chiều dọc */
+            align-items: center; /* Căn giữa theo chiều ngang */
+            height: 300px; /* Chiều cao 100% viewport để căn giữa cả màn hình */
+            width: 100%; /* Chiều rộng toàn bộ container */
+            position: relative; /* Đảm bảo không bị ảnh hưởng bởi các phần tử khác */
         }
 
         .dino {
             width: 120px;
-            margin: 20px 0;
+            margin-bottom: 20px; /* Khoảng cách giữa hình và nút */
         }
 
         .play-button {
-            background-color: #ffc107;
+            /* background-color: #ffc107; */
             color: #000;
             border: none;
             padding: 10px 20px;
@@ -92,6 +144,8 @@
             font-weight: bold;
             border-radius: 20px;
             cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
         }
 
         .play-button:hover {
@@ -128,6 +182,11 @@
                 <div class="user">
                     <i class="fa-solid fa-user" style="color: white;"></i>
                     <span id="username"></span>
+                    <nav class="user-menu">
+                        <ul>
+                            <li><a id="logout" href="">Logout</a></li>
+                        </ul>
+                    </nav>
                 </div>
                 <img src="./image/sol.png" style="width: 100px; height: 100px;" alt="">
                 <h1 class="logo">GOLDIAN</h1>
@@ -137,12 +196,7 @@
                 <div class="game-section">
                     <img src="./image/khunglong.png" alt="Dinosaur" class="dino">
                     <button class="play-button" id="play-button">
-                        <a href="" id="play" style="text-decoration: none; color: black;">
-                            Play Game (Your Attempt: 
-                            <span id="currentTurns"></span>/<span id="numberTurns"></span>)
-                        </a>
-                        <br>
-                        <span id="counttime"></span>
+                        <a href="" id="play" style="text-decoration: none; color: black;"></a>
                     </button>
                 </div>
             </main>

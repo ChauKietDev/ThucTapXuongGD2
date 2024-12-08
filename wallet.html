@@ -90,6 +90,7 @@
     }
 
     .points-input {
+      color: white;
       width: 80%;
       padding: 10px;
       border: 1px solid #ccc;
@@ -180,12 +181,9 @@
         <div class="points-section">
           <label for="points" class="points-label">Điểm</label>
           <div class="points-input-wrapper">
-            <input type="number" id="amount" class="points-input" placeholder="0">
-            <span class="currency">$</span>
+            <input type="number" id="amount" class="points-input" placeholder="0" disabled>
           </div>
           <div class="diamond-section">
-            <img src="./image/diamond.png" alt="Diamond Icon" class="diamond-icon">
-            <span class="diamond-points">Diamonds points: <b>100,253,651 DP</b></span>
           </div>
           <button id="convert-button">Sẵn sàng để đổi token</button>
         </div>
@@ -317,5 +315,5 @@
     });
   </script>
 </body>
-
+<script src="js/wallet.js"></script>
 </html>

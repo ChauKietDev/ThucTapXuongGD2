@@ -17,7 +17,9 @@ let pApi = "http://localhost:8080/api/v1/playerinfo"
 let playerInfoId: number = Number(localStorage.getItem("playerInfoId"));
 let currentPage = 1;
 let itemsPerPage = 4;
-// const selectButtons = document.getElementsByClassName("price");
+// lấy li có id là logout
+const logoutEle = document.getElementById("logout");
+
 async function addBoughtChar(pId: number, charId: number): Promise<BoughtChar | null> {
     let res = await fetch(charApi + `/buyChar/playerId-${pId}/charId-${charId}`, {
         method: "POST",
@@ -296,7 +298,18 @@ async function loadPlayer() {
         `<img src="./image/diamond.png" alt="Diamond Icon" class="diamond-icon">` + currentPlayerInfo.highestScore;
     }
 }
+function logoutShop(event: Event) {
+    event.preventDefault();
+    localStorage.removeItem("UserLogined");
+    localStorage.removeItem("playerInfoId");
+    localStorage.removeItem("otherDiamond");
+    localStorage.removeItem("power");
+    window.location.href = "login.html";
+}
 
+if (logoutEle) {
+    logoutEle.addEventListener("click", logoutShop);
+}
 loadPlayer();
 viewSelectedChar();
 loadCharacter(currentPage);

@@ -75,6 +75,7 @@ async function signup(event: Event) {
             const message = document.getElementById("message");
             if (message) {
                 message.innerHTML = "Sign up successfully";
+                window.location.href = "login.html";
             }
         }
     }

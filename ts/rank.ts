@@ -82,90 +82,96 @@ async function loaduser() {
             playerinfo = await resUpdate.json();
             localStorage.setItem("playerInfoId", playerinfo.id.toString());
 
-            const currentTurnsElement = document.getElementById("currentTurns");
-            if (currentTurnsElement) {
-                currentTurnsElement.innerHTML = playerinfo.currentTurns.toString();
+            // Gán số lượt chơi vào các biến toàn cục
+            currentTurn = playerinfo.currentTurns;
+            numberOfTurn = playerinfo.numberOfTurns;
+
+            // Hiển thị tên người dùng trên giao diện
+            const usernameElement = document.getElementById("username");
+            if (usernameElement) {
+                usernameElement.innerHTML = playerinfo.user.username; 
             }
 
-            const numberTurnsElement = document.getElementById("numberTurns");
-            if (numberTurnsElement) {
-                numberTurnsElement.innerHTML = playerinfo.numberOfTurns.toString();
+            // Gán giá trị thời gian thêm lượt chơi nếu có
+            const timeAddTurnElement = document.getElementById("timeAddTurn");
+            if (timeAddTurnElement) {
+                timeAddTurnElement.setAttribute("value",
+                    playerinfo.timeAddTurn != null ? playerinfo.timeAddTurn.toString() : ""
+                );
             }
-            document.getElementById("timeAddTurn")?.setAttribute("value", playerinfo.timeAddTurn.toString());
-        }
-        currentTurn = playerinfo.currentTurns;
-        numberOfTurn = playerinfo.numberOfTurns;
-        
-        let getTime = document.getElementById("timeAddTurn")?.getAttribute("value");
-        let timeAdd: Date = new Date(String(getTime));
-        let now: Date = new Date();
-        timeRemain = Math.floor((timeAdd.getTime() - now.getTime()) / 1000);
-        
-        if (countTime) {
-            clearInterval(countTime);
-        }
-        countTime = setInterval(() => {
-            if (currentTurn < numberOfTurn) {
-                timeRemain--;
-                if (timeRemain <= 0) {
-                    currentTurn++;
-                    timeRemain = 60; // Reset thời gian cho lượt mới.
-                }
+            const playElement = document.getElementById("play");
+            if (!playElement) {
+                console.error("Play button href element not found");
+                return;
+            }
+            const playButton = document.getElementById("play-button");
+            if (!playButton) {
+                console.error("Button not found");
+                return;
+            }
+
+            if (currentTurn > 0) {
+                // Hiển thị số lượt chơi còn lại
+                playElement.innerHTML = `Play Game (Your Attempt: 
+                    <span id="currentTurn">${currentTurn}</span>/<span id="numberTurns">${numberOfTurn}</span>)`;
+                // thay đổi thuộc tính css của button
+                playButton.style.backgroundColor = "#ffc107";
+                playButton.removeAttribute("disabled");
+                
             } else {
-                clearInterval(countTime!);
-                countTime = null;
+                // thay đổi thuộc tính css của button
+                playButton.style.backgroundColor = "grey";
+                playButton.setAttribute("disabled", "true");
+                // Đếm ngược thời gian thêm lượt chơi
+                let getTime = timeAddTurnElement?.getAttribute("value");
+                if (!getTime) {
+                    console.error("TimeAddTurn value is missing");
+                    return;
+                }
+
+                let timeAdd = new Date(getTime);
+                let now = new Date();
+                let timeRemain = Math.floor((timeAdd.getTime() - now.getTime()) / 1000);
+
+                if (timeRemain < 0) {
+                    timeRemain = 0; // Đảm bảo không có giá trị âm
+                }
+
+                // Khởi động bộ đếm thời gian
+                let diffInMinutes = Math.floor(timeRemain / 60);
+                let diffInSeconds = timeRemain % 60;
+                playElement.innerHTML = `Next attempt in: ${diffInMinutes}:${diffInSeconds >= 10 ? diffInSeconds : "0" + diffInSeconds}`;
+
+                if (counttime) {
+                    clearInterval(counttime);
+                }
+
+                counttime = setInterval(() => {
+                    if (timeRemain > 0) {
+                        timeRemain--;
+                        diffInMinutes = Math.floor(timeRemain / 60);
+                        diffInSeconds = timeRemain % 60;
+
+                        playElement.innerHTML = `Next attempt in: ${diffInMinutes}:${diffInSeconds >= 10 ? diffInSeconds : "0" + diffInSeconds}`;
+                    } else {
+                        clearInterval(counttime!); // Dừng bộ đếm khi hết thời gian
+                        counttime = null;
+                        currentTurn += 6; // Thêm lượt chơi mới
+                        playButton.style.backgroundColor = "#ffc107";
+                        playButton.removeAttribute("disabled");
+                        playElement.innerHTML = `Play Game (Your Attempt: 
+                            <span id="currentTurn">${currentTurn}</span>/<span id="numberTurns">${numberOfTurn}</span>)`;
+                    }
+                }, 1000);
             }
-        }, 1000);    
-    }
-}
-function updateui() {
-    const count = document.getElementById("counttime");
-    const currentTurnsElement = document.getElementById("currentTurns");
-    const numberTurnsElement = document.getElementById("numberTurns");
-    if (currentTurnsElement) {
-        currentTurnsElement.innerHTML = currentTurn.toString();
-    }
-    if (numberTurnsElement) {
-        numberTurnsElement.innerHTML = numberOfTurn.toString();
-    }
-    if (count) {
-        if (currentTurn < numberOfTurn) {
-            count.innerHTML = "Next attempt in: ";
-            let diffInMinutes = Math.floor(timeRemain / 60);
-            let diffInSeconds = timeRemain % 60;
-    
-            count.innerHTML += `${diffInMinutes}:${diffInSeconds >= 10 ? diffInSeconds : "0" + diffInSeconds}`;
-        }
-        else {
-            count.innerHTML = "";
         }
     }
-
-    const playbutton = document.getElementById("play-button");
-    if (currentTurn > 0) {
-        if (playbutton) {
-            playbutton.removeAttribute("disabled");
-            playbutton.style.backgroundColor = "#ffc107";
-        }
-    }
-    else {
-        if (play) {
-            play.removeAttribute("href");
-        }
-        if (playbutton) {
-            playbutton.setAttribute("disabled", "true");
-            playbutton.style.backgroundColor = "grey";
-        }
-        
-    }
-
-    requestAnimationFrame(updateui);
 }
 async function checkTurn(event: Event) {
     event.preventDefault();
 
-    let currentTurns: number = Number(document.getElementById("currentTurns")?.textContent);
-    if (currentTurns > 0) {
+    let currentTurn: number = Number(document.getElementById("currentTurn")?.textContent);
+    if (currentTurn > 0) {
         window.location.href = "test.html";
     }
 }
@@ -184,9 +190,9 @@ async function loadTurn() {
         playerinfo = await resUpdate.json();
         localStorage.setItem("playerInfoId", playerinfo.id.toString());
 
-        const currentTurnsElement = document.getElementById("currentTurns");
-        if (currentTurnsElement) {
-            currentTurnsElement.innerHTML = playerinfo.currentTurns.toString();
+        const currentTurnElement = document.getElementById("currentTurn");
+        if (currentTurnElement) {
+            currentTurnElement.innerHTML = playerinfo.currentTurns.toString();
         }
 
         const numberTurnsElement = document.getElementById("numberTurns");
@@ -207,7 +213,7 @@ async function loadRank() {
 }
 function run() {
     loaduser();
-    updateui();
+    requestAnimationFrame(loaduser);
 }
 
 loadRank();

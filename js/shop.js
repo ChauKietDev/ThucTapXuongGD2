@@ -13,7 +13,8 @@ let pApi = "http://localhost:8080/api/v1/playerinfo";
 let playerInfoId = Number(localStorage.getItem("playerInfoId"));
 let currentPage = 1;
 let itemsPerPage = 4;
-// const selectButtons = document.getElementsByClassName("price");
+// lấy li có id là logout
+const logoutEle = document.getElementById("logout");
 function addBoughtChar(pId, charId) {
     return __awaiter(this, void 0, void 0, function* () {
         let res = yield fetch(charApi + `/buyChar/playerId-${pId}/charId-${charId}`, {
@@ -307,6 +308,17 @@ function loadPlayer() {
                 `<img src="./image/diamond.png" alt="Diamond Icon" class="diamond-icon">` + currentPlayerInfo.highestScore;
         }
     });
+}
+function logoutShop(event) {
+    event.preventDefault();
+    localStorage.removeItem("UserLogined");
+    localStorage.removeItem("playerInfoId");
+    localStorage.removeItem("otherDiamond");
+    localStorage.removeItem("power");
+    window.location.href = "login.html";
+}
+if (logoutEle) {
+    logoutEle.addEventListener("click", logoutShop);
 }
 loadPlayer();
 viewSelectedChar();

@@ -259,16 +259,9 @@ function updateHook(): void {
                 // Cập nhật điểm khi vật phẩm chạm vào nhân vật
                 if (item.type === "positive") {
                     if (power && power !== "null") {
-                        if (power.includes("x")) {
-                            let extra: number = Number(power.substring(1)); // Bỏ qua dấu +, x
-                            console.log(item.value, item.value * extra)
-                            score += item.value * extra; // Cộng điểm
-                        }
-                        else if (power.includes("+")) {
-                            let extra: number = Number(power.substring(1)); // Bỏ qua dấu +, x
-                            console.log(item.value, item.value + extra)
-                            score += item.value + extra; // Cộng điểm
-                        }
+                        let extra: number = Number(power); // Bỏ qua dấu +, x
+                        console.log(item.value, item.value * extra)
+                        score += item.value * extra; // Cộng điểm sau khi nhân
                     }
                     else {
                         score += item.value; // Cộng điểm
@@ -276,7 +269,7 @@ function updateHook(): void {
                 } else {
                     score -= item.value; // Trừ điểm
                 }
-                scoreDisplay.textContent = score.toString(); // Cập nhật hiển thị điểm
+                scoreDisplay.textContent = score.toFixed(1).toString(); // Cập nhật hiển thị điểm
                 itemNumber--;
             }
         } else {

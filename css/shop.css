@@ -41,21 +41,68 @@ body {
   
   .header-image {
     margin-top: 30px;
+    margin-left: 30%;
     height: 100px;
   }
 
-  .user{
+  .user {
     background: linear-gradient(#539cd2, #50cdde);
     border-top-left-radius: 20px;
     border-bottom-left-radius: 20px;
     padding: 5px 15px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    color: #fdde57; /* Gold color for text */
+    color: #fdde57;
     font-size: 19px;
     font-weight: bold;
     width: fit-content;
     margin-left: auto;
-    margin-top: -10px;
+    position: relative; /* Để đảm bảo menu con nằm trong vị trí của div */
+    cursor: pointer;
+  }
+
+  /* Menu con ẩn mặc định */
+  .user-menu {
+      display: none;
+      position: absolute; /* Định vị menu con */
+      top: 100%; /* Hiển thị ngay bên dưới div.user */
+      right: 0; /* Canh phải với div.user */
+      background: #ffffff; /* Màu nền menu */
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      padding: 10px 0;
+      z-index: 10; /* Đảm bảo menu hiển thị trên các thành phần khác */
+  }
+
+  /* Hiển thị menu khi hover */
+  .user:hover .user-menu {
+      display: block;
+  }
+
+  /* Menu các mục con */
+  .user-menu ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+  }
+
+  .user-menu li {
+      height: 20px;
+      padding: 0px 15px;
+  }
+
+  .user-menu li a {
+      text-decoration: none;
+      color: #539cd2; /* Màu chữ của liên kết */
+      display: block;
+      font-size: 19px;
+      font-weight: bold;
+      transition: background 0.3s ease, color 0.3s ease;
+  }
+
+  .user-menu li a:hover {
+      background: #50cdde;
+      color: white;
   }
 
   .diamond-icon {
@@ -65,19 +112,22 @@ body {
   }
 
   .score {
-    position: absolute;
-    top: 99px;
-    right: 34.5%; /* Căn giữa theo trục X */
-    transform: translateX(-50%);
-    font-size: 20px;
+    float: right;
+    background: #1f0887cc;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    padding: 3px 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    color: #ffffff; /* Gold color for text */
+    font-size: 19px;
     font-weight: bold;
-    display: flex;
-    justify-content: center; /* Đảm bảo văn bản nằm giữa trục ngang */
-    align-items: center; /* Căn giữa trục dọc */
-    min-width: 100px; /* Đặt chiều rộng tối thiểu */
-    height: 40px; /* Đặt chiều cao cố định */
-    background-color: rgba(0, 0, 0, 0.1); /* Nếu muốn có nền */
-    border-radius: 8px; /* Tùy chọn: Bo góc nếu muốn */
+    width: fit-content;
+    margin-left: auto;
+    margin-top: 10px;
+  
+    display: flex; /* Sử dụng flexbox */
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    align-items: end; /* Căn giữa theo chiều dọc */
   }
     
   .available-coins {
