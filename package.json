@@ -15,7 +15,7 @@
     "@solana/spl-token": "^0.4.9",
     "@solana/web3.js": "^1.95.5",
     "cors": "^2.8.5",
-    "express": "^4.21.1",
+    "express": "^4.21.2",
     "jsdom": "^25.0.1",
     "mysql2": "^3.11.5",
     "qrcode": "^1.5.4"

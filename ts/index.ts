@@ -157,7 +157,7 @@ function generateItems(count: number): Item[] {
         const x = Math.random() * (canvas.width - 50) + 25; // Random vị trí X
         const y = Math.random() * (canvas.height - paddingTop - 150) + paddingTop + 150; // Random Y bắt đầu từ paddingTop
         const size = Math.random() * 70 + 25;
-        const value = Math.floor(size * 1);
+        const value = Math.floor(size * 0.3);
 
         // Ngẫu nhiên loại vật phẩm
         const type = Math.random() < 0.8 ? "positive" : "negative";
